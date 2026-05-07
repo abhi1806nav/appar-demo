@@ -40,12 +40,12 @@ app.post("/verify", async (req, res) => {
 
     formData.append(
       "customer_id",
-      "process.env.customer_id"
+      "process.env.CUSTOMER_ID"
     );
 
     formData.append(
       "customer_secret_key",
-      "process.env.customer_secret_key"
+      "process.env.CUSTOMER_SECRET_KEY"
     );
 
     const tokenResponse = await axios.post(
