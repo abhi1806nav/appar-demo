@@ -40,12 +40,12 @@ app.post("/verify", async (req, res) => {
 
     formData.append(
       "customer_id",
-      "process.env.CUSTOMER_ID"
+      process.env.CUSTOMER_ID
     );
 
     formData.append(
       "customer_secret_key",
-      "process.env.CUSTOMER_SECRET_KEY"
+      process.env.CUSTOMER_SECRET_KEY
     );
 
     const tokenResponse = await axios.post(
@@ -146,9 +146,7 @@ app.post("/verify", async (req, res) => {
             "Authorization":
               "Bearer " + accessToken,
 
-            "X-APISETU-APIKEY":
-              "process.env.APISETU_APIKEY"
-
+            "X-APISETU-APIKEY": ""
           }
         }
       );
