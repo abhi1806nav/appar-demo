@@ -148,6 +148,76 @@ app.post("/verify", async (req, res) => {
           }
         }
       );
+    // =========================
+// SAVE TO GOOGLE SHEET
+// =========================
+
+try {
+
+  await axios.post(
+    "https://script.google.com/macros/s/AKfycbzee7qiMQT2CcBXixoDhNLg6uEmnVz1acOCroBc70QQAJnuia5Eo3HvcK23Mio98jwK/exec",
+
+    {
+
+      ip:
+        req.headers["x-forwarded-for"]
+        || req.socket.remoteAddress,
+
+      userAgent:
+        req.headers["user-agent"],
+
+      apaar_id:
+        req.body.apaar_id,
+
+      name:
+        req.body.name,
+
+      year_of_birth:
+        req.body.year_of_birth,
+
+      gender:
+        req.body.gender,
+
+      consent_relation:
+        req.body.consent_relation,
+
+      provider_name:
+        req.body.provider_name,
+
+      authentication_mode:
+        req.body.authentication_mode,
+
+      authentication_id_no:
+        req.body.authentication_id_no,
+
+      consent_date:
+        req.body.consent_date,
+
+      consent_time:
+        req.body.consent_time,
+
+      place:
+        req.body.place,
+
+      verification_status:
+        verifyResponse.data?.status || "",
+
+      api_response:
+        verifyResponse.data
+
+    }
+
+  );
+
+}
+catch(sheetError) {
+
+  console.log(
+    "Google Sheet Save Error:",
+    sheetError.message
+  );
+
+}
 
     // =========================
     // FINAL RESPONSE
