@@ -7,41 +7,36 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
-        url("https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1600");
+      url("https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1600");
       background-size: cover;
-      background-position: center;
       min-height: 100vh;
     }
 
     .card {
-      background: white;
-      width: 720px;
+      background: #fff;
+      width: 790px;
       max-width: 92%;
-      margin: 35px auto;
-      padding: 35px;
+      margin: 25px auto;
+      padding: 34px;
       border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.35);
-    }
-
-    h1, h2, h3 {
-      text-align: center;
-      margin: 5px 0;
     }
 
     h1 {
+      text-align: center;
       color: #b32020;
-      font-size: 26px;
+      margin: 5px 0;
     }
 
-    h2 {
-      font-size: 22px;
+    h2, h3 {
+      text-align: center;
+      margin: 5px 0;
     }
 
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
-      margin-top: 25px;
+      margin-top: 24px;
     }
 
     label {
@@ -53,9 +48,9 @@
     input, select {
       width: 100%;
       padding: 11px;
+      font-size: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      font-size: 15px;
       box-sizing: border-box;
     }
 
@@ -67,58 +62,74 @@
 
     .consent-box {
       margin-top: 25px;
-      padding: 15px;
+      padding: 20px;
       background: #f7f7f7;
-      border-radius: 8px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
     }
 
     .radio-row {
       display: flex;
-      gap: 20px;
-      margin: 10px 0;
+      gap: 28px;
+      margin: 15px 0;
+      font-size: 17px;
+    }
+
+    .consent-line {
+      margin-top: 15px;
+      font-size: 17px;
+      display: flex;
+      gap: 10px;
       align-items: center;
     }
 
-    .radio-row label {
-      font-weight: normal;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .consent-line input {
+      width: 18px;
+      height: 18px;
+    }
+
+    details {
+      margin-top: 18px;
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: #b32020;
     }
 
     button {
       width: 100%;
-      margin-top: 25px;
+      margin-top: 24px;
       padding: 14px;
       background: #c7352c;
       color: white;
-      border: 0;
-      border-radius: 4px;
+      border: none;
+      border-radius: 5px;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
     .result-card {
       margin-top: 25px;
-      padding: 20px;
+      padding: 22px;
+      background: #f0fff0;
+      border: 1px solid #71c971;
       border-radius: 8px;
-      background: #f1fff1;
-      border: 1px solid #8bd68b;
     }
 
     .error-card {
       margin-top: 25px;
-      padding: 20px;
-      border-radius: 8px;
+      padding: 18px;
       background: #fff1f1;
       border: 1px solid #e19b9b;
-      color: #9b0000;
+      color: #900;
+      border-radius: 8px;
     }
 
     table {
@@ -129,94 +140,87 @@
 
     td {
       border: 1px solid #ddd;
-      padding: 10px;
+      padding: 11px;
     }
 
     td:first-child {
+      background: #f7f7f7;
       font-weight: bold;
       width: 40%;
-      background: #f7f7f7;
     }
 
-    .next-form {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
-    }
-
-    .note {
-      color: #c7352c;
-      font-size: 13px;
-      margin-top: 12px;
+    .next-message {
+      margin-top: 20px;
+      padding: 16px;
+      background: #eef7ff;
+      border: 1px solid #7ab8e8;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      color: #064b7a;
     }
 
     @media(max-width: 700px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+      .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="card">
-    <h1>Abhinav XYZ University</h1>
-    <h2>ABC/APAAR ID Verification Mechanism Developed by Abhinav</h2>
-    <h3>For Candidate Registration</h3>
+<div class="card">
+  <h1>Abhinav XYZ University</h1>
+  <h2>ABC/APAAR ID Verification Mechanism Developed by Abhinav</h2>
+  <h3>For Candidate Registration</h3>
 
-    <form id="verifyForm">
+  <form id="verifyForm">
 
-      <div class="grid">
-        <div>
-          <label>ABC/APAAR ID *</label>
-          <input id="apaar_id" maxlength="12" required placeholder="Enter 12 digit ABC/APAAR ID">
-          <div class="hint">Only 12 digit numerical value allowed.</div>
-        </div>
-
-        <div>
-          <label>Name *</label>
-          <input id="name" required placeholder="Name as per Aadhaar">
-          <div class="hint">Enter name as per Aadhaar.</div>
-        </div>
-
-        <div>
-          <label>Year of Birth *</label>
-          <select id="year_of_birth" required></select>
-          <div class="hint">Year of birth as per Aadhaar.</div>
-        </div>
-
-        <div>
-          <label>Gender *</label>
-          <select id="gender" required>
-            <option value="">Select Gender</option>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
-            <option value="T">Transgender</option>
-          </select>
-          <div class="hint">Gender as per Aadhaar.</div>
-        </div>
+    <div class="grid">
+      <div>
+        <label>ABC/APAAR ID *</label>
+        <input id="apaar_id" maxlength="12" required>
+        <div class="hint">Only 12 digit numerical value allowed.</div>
       </div>
 
-      <div class="consent-box">
-        <label>Consent Provided By *</label>
+      <div>
+        <label>Name *</label>
+        <input id="name" required>
+        <div class="hint">Enter name as per Aadhaar.</div>
+      </div>
 
-        <div class="radio-row">
-          <label>
-            <input type="radio" name="consent_relation" value="Self" checked>
-            SELF
-          </label>
+      <div>
+        <label>Year of Birth *</label>
+        <select id="year_of_birth" required></select>
+        <div class="hint">Year of birth as per Aadhaar.</div>
+      </div>
 
-          <label>
-            <input type="radio" name="consent_relation" value="Guardian">
-            Other
-          </label>
-        </div>
+      <div>
+        <label>Gender *</label>
+        <select id="gender" required>
+          <option value="">Select Gender</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="T">Transgender</option>
+        </select>
+        <div class="hint">Gender as per Aadhaar.</div>
+      </div>
+    </div>
 
-        <p>
-          <input type="checkbox" id="consent_check" required>
-          I am providing consent to verify my details against the APAAR ID.
-        </p>
+    <div class="consent-box">
+      <label>Consent Provided By *</label>
+
+      <div class="radio-row">
+        <label><input type="radio" name="consent_relation" value="Self" checked> SELF</label>
+        <label><input type="radio" name="consent_relation" value="Guardian"> Other</label>
+      </div>
+
+      <div class="consent-line">
+        <input type="checkbox" id="consent_check" required checked>
+        <span>I am providing consent to verify my details against the APAAR ID.</span>
+      </div>
+
+      <details id="providerDetails">
+        <summary>View / Edit Consent Provider Information</summary>
 
         <div class="grid">
           <div>
@@ -237,7 +241,7 @@
 
           <div>
             <label>Provider Authentication ID No *</label>
-            <input id="authentication_id_no" required placeholder="Enter ID number">
+            <input id="authentication_id_no" required>
           </div>
 
           <div>
@@ -255,19 +259,20 @@
             <input id="consent_time" readonly>
           </div>
         </div>
-      </div>
+      </details>
+    </div>
 
-      <button id="verifyBtn" type="submit">Verify the Details</button>
-    </form>
+    <button id="verifyBtn" type="submit">Verify the Details</button>
+  </form>
 
-    <div id="responseArea"></div>
-  </div>
+  <div id="responseArea"></div>
+</div>
 
 <script>
   const yearSelect = document.getElementById("year_of_birth");
 
   for (let y = 2026; y >= 1950; y--) {
-    const opt = document.createElement("option");
+    let opt = document.createElement("option");
     opt.value = y;
     opt.textContent = y;
     yearSelect.appendChild(opt);
@@ -294,21 +299,17 @@
   setInterval(setDateTime, 1000);
 
   function autoFillSelf() {
-    const relation =
-      document.querySelector("input[name='consent_relation']:checked").value;
+    const relation = document.querySelector("input[name='consent_relation']:checked").value;
 
     if (relation === "Self") {
-      document.getElementById("provider_name").value =
-        document.getElementById("name").value;
-
+      document.getElementById("provider_name").value = document.getElementById("name").value;
       document.getElementById("authentication_mode").value = "UID";
-
-      document.getElementById("authentication_id_no").value =
-        document.getElementById("apaar_id").value;
+      document.getElementById("authentication_id_no").value = document.getElementById("apaar_id").value;
     }
   }
 
   document.getElementById("name").addEventListener("input", autoFillSelf);
+
   document.getElementById("apaar_id").addEventListener("input", function() {
     this.value = this.value.replace(/\D/g, "").slice(0, 12);
     autoFillSelf();
@@ -316,15 +317,25 @@
 
   document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
     radio.addEventListener("change", function() {
+      const details = document.getElementById("providerDetails");
+
       if (this.value === "Self") {
+        details.open = false;
         autoFillSelf();
       } else {
+        details.open = true;
         document.getElementById("provider_name").value = "";
         document.getElementById("authentication_mode").value = "UID";
         document.getElementById("authentication_id_no").value = "";
       }
     });
   });
+
+  function convertDobToDateInput(dob) {
+    if (!dob || !dob.includes("/")) return "";
+    const parts = dob.split("/");
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
 
   document.getElementById("verifyForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -360,9 +371,7 @@
     try {
       const response = await fetch("/verify", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
@@ -375,45 +384,49 @@
             <h3>Information received from ABC/APAAR ID Verification System</h3>
 
             <table>
-              <tr><td>ABC Account ID</td><td>${apiData.ABC_ACCOUNT_ID || ""}</td></tr>
-              <tr><td>Name</td><td>${apiData.CNAME || ""}</td></tr>
+              <tr><td>ABC/APAAR ID</td><td>${apiData.ABC_ACCOUNT_ID || ""}</td></tr>
+              <tr><td>Candidate Name in APAAR</td><td>${apiData.CNAME || ""}</td></tr>
               <tr><td>Gender</td><td>${apiData.GENDER || ""}</td></tr>
-              <tr><td>DOB</td><td>${apiData.DOB || ""}</td></tr>
-              <tr><td>University Name</td><td>${apiData.UNIVERSITY_NAME || ""}</td></tr>
-              <tr><td>Course Name</td><td>${apiData.COURSE_NAME || ""}</td></tr>
-              <tr><td>Program Name</td><td>${apiData.PROGRAM_NAME || ""}</td></tr>
-              <tr><td>Enrollment No</td><td>${apiData.ENROLLMENT_NO || ""}</td></tr>
-              <tr><td>Roll No</td><td>${apiData.ROLL_NO || ""}</td></tr>
-              <tr><td>Registration No</td><td>${apiData.REGN_NO || ""}</td></tr>
+              <tr><td>Date of Birth in APAAR</td><td>${apiData.DOB || ""}</td></tr>
             </table>
 
-            <div class="next-form">
-              <h3>Candidate Registration Details</h3>
+            <h3 style="margin-top:25px;">Candidate Registration Details</h3>
 
-              <div class="grid">
-                <div>
-                  <label>Email</label>
-                  <input placeholder="Enter email">
-                </div>
-
-                <div>
-                  <label>Mobile Number</label>
-                  <input placeholder="Enter mobile number">
-                </div>
-
-                <div>
-                  <label>Father / Guardian Name</label>
-                  <input placeholder="Enter father/guardian name">
-                </div>
-
-                <div>
-                  <label>Address</label>
-                  <input placeholder="Enter address">
-                </div>
+            <div class="grid">
+              <div>
+                <label>Candidate Name as per 10th</label>
+                <input id="reg_name" value="${apiData.CNAME || ""}">
               </div>
 
-              <button type="button">NEXT</button>
+              <div>
+                <label>Date of Birth</label>
+                <input type="date" value="${convertDobToDateInput(apiData.DOB)}">
+              </div>
+
+              <div>
+                <label>Email</label>
+                <input placeholder="Enter email">
+              </div>
+
+              <div>
+                <label>Mobile Number</label>
+                <input placeholder="Enter mobile number">
+              </div>
+
+              <div>
+                <label>Father / Guardian Name</label>
+                <input placeholder="Enter father/guardian name">
+              </div>
+
+              <div>
+                <label>Address</label>
+                <input placeholder="Enter address">
+              </div>
             </div>
+
+            <button type="button" onclick="showNextMessage()">NEXT</button>
+
+            <div id="nextMessage"></div>
           </div>
         `;
       } else {
@@ -437,6 +450,14 @@
     btn.disabled = false;
     btn.innerText = "Verify the Details";
   });
+
+  function showNextMessage() {
+    document.getElementById("nextMessage").innerHTML = `
+      <div class="next-message">
+        This demonstrates the method to integrate ABC/APAAR ID verification with a candidate registration system.
+      </div>
+    `;
+  }
 </script>
 
 </body>
