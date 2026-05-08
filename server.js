@@ -94,21 +94,19 @@ app.post("/verify", async (req, res) => {
       provider_artifact: {
         provider: {
 
-          name: req.body.name,
+          name: req.body.provider_name,
 
-          authentication_mode: "SELF",
+          authentication_mode: req.body.authentication_mode,
 
-          authentication_id_no:
-            req.body.apaar_id,
+          authentication_id_no:req.body.authentication_id_no,
 
-          consent_relation: "Self",
+          consent_relation: req.body.consent_relation,
 
-          consent_date: currentDate,
+          consent_date: req.body.consent_date,
 
-          consent_time: currentTime,
+          consent_time: req.body.consent_time,
 
-          consent_place:
-            req.body.place || "Delhi"
+          consent_place: req.body.place || "Delhi"
 
         }
       }
