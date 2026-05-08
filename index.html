@@ -577,26 +577,25 @@ fetch("https://ipapi.co/json/")
 .then(response => response.json())
 .then(data => {
 
-  if (data.city && data.region) {
+  let cleanPlace = "India";
 
-    document.getElementById("place").value =
-      data.city + ", " + data.region;
+  if (data.city) {
 
-  }
-  else if (data.city) {
-
-    document.getElementById("place").value =
-      data.city;
+    cleanPlace =
+      data.city.replace(/[^a-zA-Z\s]/g, "");
 
   }
-  else {
 
-    document.getElementById("place").value =
-      "India";
-
-  }
+  document.getElementById("place").value =
+    cleanPlace;
 
 })
+.catch(() => {
+
+  document.getElementById("place").value =
+    "India";
+
+});
 .catch(() => {
 
   document.getElementById("place").value =
