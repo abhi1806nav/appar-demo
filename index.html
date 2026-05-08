@@ -215,7 +215,7 @@
       </div>
 
       <div class="consent-line">
-        <input type="checkbox" id="consent_check" required checked>
+        <input type="checkbox" id="consent_check" required>
         <span>I am providing consent to verify my details against the APAAR ID.</span>
       </div>
 
@@ -452,12 +452,124 @@
   });
 
   function showNextMessage() {
-    document.getElementById("nextMessage").innerHTML = `
-      <div class="next-message">
-        This demonstrates the method to integrate ABC/APAAR ID verification with a candidate registration system.
-      </div>
-    `;
-  }
+
+  document.getElementById("nextMessage").innerHTML = `
+  
+    <div class="next-message" style="text-align:left; line-height:1.9;">
+
+      <h3 style="text-align:center;">
+        ABC/APAAR ID Verification Integration Workflow
+      </h3>
+
+      <p>
+        This demonstration explains how an institution can integrate
+        the ABC/APAAR ID Verification mechanism within its
+        admission, registration, ERP or student management system.
+      </p>
+
+      <ol>
+
+        <li>
+          First, the institution needs to request API access from the ABC/APAAR Team.
+        </li>
+
+        <li>
+          After approval, the institution receives:
+          <b>Customer ID</b> and
+          <b>Customer Secret Key</b>.
+        </li>
+
+        <li>
+          Using these credentials, the institution can generate:
+          <ul>
+            <li>Authorization Access Token</li>
+            <li>Encryption Key</li>
+          </ul>
+          through the Token API service.
+        </li>
+
+        <li>
+          Once the token and encryption key are generated,
+          the institution can access the
+          <b>Verify APAAR ID API</b>.
+        </li>
+
+        <li>
+          The institution sends candidate information such as:
+          ABC/APAAR ID, candidate name, year of birth and gender
+          along with candidate consent details.
+        </li>
+
+        <li>
+          If the consent is provided by <b>SELF</b>,
+          the same candidate information can be reused
+          as provider details automatically.
+        </li>
+
+        <li>
+          If consent is provided by <b>Guardian / Other</b>,
+          then separate provider information must be collected,
+          including provider name, authentication mode,
+          authentication ID number and consent details.
+        </li>
+
+        <li>
+          Before sending the verification request,
+          the complete payload must be encrypted using
+          the encryption key received from the Token API.
+        </li>
+
+        <li>
+          The encrypted payload is then submitted securely
+          to the Verify APAAR API using the generated
+          authorization token.
+        </li>
+
+        <li>
+          The API response returns verified APAAR-linked
+          candidate information such as:
+          <ul>
+            <li>ABC Account ID</li>
+            <li>Candidate Name</li>
+            <li>Gender</li>
+            <li>Date of Birth</li>
+            <li>Academic Information</li>
+          </ul>
+        </li>
+
+        <li>
+          Institutions can use the verified response
+          for candidate authentication, validation,
+          student onboarding, or to display
+          pre-filled registration forms within
+          their admission systems.
+        </li>
+
+        <li>
+          This integration helps institutions reduce
+          manual data entry, improve data accuracy,
+          simplify verification workflows,
+          and ensure trusted student identity validation.
+        </li>
+
+      </ol>
+
+      <p>
+        This workflow can be integrated with:
+      </p>
+
+      <ul>
+        <li>University Admission Systems</li>
+        <li>Student Registration Portals</li>
+        <li>ERP / SIS Platforms</li>
+        <li>Scholarship Systems</li>
+        <li>Digital Student Onboarding Workflows</li>
+      </ul>
+
+    </div>
+
+  `;
+}
 </script>
 
 </body>
