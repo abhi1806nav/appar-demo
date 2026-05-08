@@ -214,7 +214,7 @@
       </div>
 
       <div class="consent-line">
-        <input type="checkbox" id="consent_check" required>
+        <input type="checkbox" id="consent_check" required checked>
         <span>I am providing consent to verify my details against the APAAR ID.</span>
       </div>
 
@@ -268,34 +268,53 @@
 </div>
 
 <script>
-  const yearSelect = document.getElementById("year_of_birth");
+  // Year dropdown
+const yearSelect = document.getElementById("year_of_birth");
+yearSelect.innerHTML = '<option value="">Select Year</option>';
 
-  for (let y = 2026; y >= 1950; y--) {
-    let opt = document.createElement("option");
-    opt.value = y;
-    opt.textContent = y;
-    yearSelect.appendChild(opt);
-  }
+for (let y = 2026; y >= 1950; y--) {
+  const opt = document.createElement("option");
+  opt.value = y;
+  opt.textContent = y;
+  yearSelect.appendChild(opt);
+}
 
-  function setDateTime() {
-    const now = new Date();
+// Consent date/time
+function setDateTime() {
+  const now = new Date();
 
-    const date =
-      String(now.getDate()).padStart(2, "0") + "/" +
-      String(now.getMonth() + 1).padStart(2, "0") + "/" +
-      now.getFullYear();
+  const date =
+    String(now.getDate()).padStart(2, "0") + "/" +
+    String(now.getMonth() + 1).padStart(2, "0") + "/" +
+    now.getFullYear();
 
-    const time =
-      String(now.getHours()).padStart(2, "0") + ":" +
-      String(now.getMinutes()).padStart(2, "0") + ":" +
-      String(now.getSeconds()).padStart(2, "0");
+  const time =
+    String(now.getHours()).padStart(2, "0") + ":" +
+    String(now.getMinutes()).padStart(2, "0") + ":" +
+    String(now.getSeconds()).padStart(2, "0");
 
-    document.getElementById("consent_date").value = date;
-    document.getElementById("consent_time").value = time;
-  }
+  document.getElementById("consent_date").value = date;
+  document.getElementById("consent_time").value = time;
+}
 
-  setDateTime();
-  setInterval(setDateTime, 1000);
+setDateTime();
+setInterval(setDateTime, 1000);
+
+// Location auto-fill, only alphabets and spaces
+fetch("https://ipapi.co/json/")
+  .then(response => response.json())
+  .then(data => {
+    let cleanPlace = "India";
+
+    if (data.city) {
+      cleanPlace = data.city.replace(/[^a-zA-Z\s]/g, "").trim();
+    }
+
+    document.getElementById("place").value = cleanPlace || "India";
+  })
+  .catch(() => {
+    document.getElementById("place").value = "India";
+  });
 
   function autoFillSelf() {
     const relation = document.querySelector("input[name='consent_relation']:checked").value;
@@ -590,12 +609,6 @@ fetch("https://ipapi.co/json/")
     cleanPlace;
 
 })
-.catch(() => {
-
-  document.getElementById("place").value =
-    "India";
-
-});
 .catch(() => {
 
   document.getElementById("place").value =
