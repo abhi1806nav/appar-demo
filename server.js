@@ -210,14 +210,26 @@ app.post("/verify", async (req, res) => {
     // ---------- Step 2: Naya payload format ----------
     const txnId = "TXN" + Date.now();
 
-    const jsonData = {
-      apaarId: req.body.apaar_id,
-      purpose: req.body.purpose || "Admission",
-      txnId: txnId,
-      userId: req.body.user_id || process.env.USER_ID || "Test123",
-      place: req.body.place || "New Delhi",
-      is_consent_true: true
-    };
+const jsonData = {
+  apaar_id: req.body.apaar_id,
+  aadhaar_name: req.body.name,
+  year_of_birth: req.body.year_of_birth,
+  gender: req.body.gender,
+  txn_id: txnId,
+  is_provider_present: "true",
+
+  provider_artifact: {
+    provider: {
+      name: req.body.provider_name,
+      authentication_mode: req.body.authentication_mode,
+      authentication_id_no: req.body.authentication_id_no,
+      consent_relation: req.body.consent_relation,
+      consent_date: req.body.consent_date,
+      consent_time: req.body.consent_time,
+      consent_place: req.body.place || "Delhi"
+    }
+  }
+};
 
     console.log("Payload (encrypt se pehle):", jsonData);
 
