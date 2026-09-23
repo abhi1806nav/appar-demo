@@ -249,6 +249,189 @@
       color: #064b7a;
     }
 
+
+    /* ---------- Live process tracker ---------- */
+    .tracker {
+      margin-top: 25px;
+      padding: 18px 20px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .tracker h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .tracker-step {
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e2e2e2;
+    }
+
+    .tracker-step:last-of-type {
+      border-bottom: none;
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #c8c8c8;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: bold;
+      color: #fff;
+      margin-top: 1px;
+    }
+
+    .step-label {
+      font-weight: bold;
+      color: #999;
+    }
+
+    .step-detail {
+      font-size: 13px;
+      color: #666;
+      margin-top: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .step-time {
+      font-size: 13px;
+      color: #888;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      margin-top: 3px;
+    }
+
+    /* Running: spinning ring */
+    .tracker-step.running .step-icon {
+      border-color: #f0c9c6;
+      border-top-color: #c7352c;
+      animation: spin .8s linear infinite;
+    }
+
+    .tracker-step.running .step-label { color: #222; }
+
+    /* Done: green tick */
+    .tracker-step.done .step-icon {
+      background: #1f9d47;
+      border-color: #1f9d47;
+    }
+
+    .tracker-step.done .step-label { color: #222; }
+
+    /* Error: red cross */
+    .tracker-step.error .step-icon {
+      background: #d33;
+      border-color: #d33;
+    }
+
+    .tracker-step.error .step-label { color: #b00000; }
+    .tracker-step.error .step-detail { color: #b00000; }
+
+    /* Skipped: dash, after an earlier step failed */
+    .tracker-step.skipped .step-icon {
+      border-style: dashed;
+      color: #bbb;
+    }
+
+    .tracker-total {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tracker-step.running .step-icon { animation-duration: 3s; }
+    }
+
+
+    /* ---------- Mode tabs ---------- */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 22px;
+      padding: 5px;
+      background: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    .tabs .tab {
+      flex: 1;
+      width: auto;
+      margin: 0;
+      padding: 12px 10px;
+      font-size: 15px;
+      background: transparent;
+      color: #444;
+      border-radius: 6px;
+    }
+
+    .tabs .tab.active {
+      background: #c7352c;
+      color: #fff;
+    }
+
+    .tabs .tab:focus-visible,
+    button:focus-visible,
+    .link-btn:focus-visible {
+      outline: 3px solid #f2a39d;
+      outline-offset: 2px;
+    }
+
+    .mode-intro {
+      margin: 16px 0 0;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 6px 0 0;
+      width: auto;
+      font-size: 13px;
+      font-weight: bold;
+      color: #b32020;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Big display for a newly created APAAR ID */
+    .big-id {
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      color: #145c2a;
+      margin: 14px 0 6px;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .center {
+      text-align: center;
+    }
+
     @media(max-width: 700px) {
       .grid { grid-template-columns: 1fr; }
       .card { padding: 20px; }
@@ -259,17 +442,24 @@
 <body>
 
 <div class="card">
-  <h1>Abhinav XYZ Institution Uni</h1>
+  <h1>Abhinav Demo Institution Uni</h1>
   <h2>ABC/APAAR ID Verification Mechanism Developed by Abhinav</h2>
   <h3>For Candidate Registration</h3>
 
+  <div class="tabs" role="tablist">
+    <button type="button" class="tab active" data-mode="verify" role="tab" aria-selected="true">I have APAAR ID</button>
+    <button type="button" class="tab" data-mode="create" role="tab" aria-selected="false">Don't have / forgot APAAR ID</button>
+  </div>
+
+  <!-- ================= MODE 1: VERIFY ================= -->
   <form id="verifyForm">
 
     <div class="grid">
       <div>
         <label>ABC/APAAR ID *</label>
-        <input id="apaar_id" maxlength="12" inputmode="numeric" required>
+        <input id="apaar_id" maxlength="12" inputmode="numeric" autocomplete="off" required>
         <div class="hint">Only 12 digit numerical value allowed.</div>
+        <button type="button" class="link-btn" data-switch="create">Don't have APAAR ID? Get it using Aadhaar</button>
       </div>
 
       <div>
@@ -354,6 +544,63 @@
     <button id="verifyBtn" type="submit">Verify the Details</button>
   </form>
 
+  <!-- ================= MODE 2: CREATE / GET APAAR ID ================= -->
+  <form id="createForm" hidden>
+
+    <p class="mode-intro">
+      Enter your details exactly as printed on your Aadhaar card to get your ABC/APAAR ID.
+    </p>
+
+    <div class="grid">
+      <div>
+        <label>Name as per Aadhaar *</label>
+        <input id="c_name" autocomplete="name" required>
+      </div>
+
+      <div>
+        <label>Aadhaar Number *</label>
+        <input id="c_aadhaar" maxlength="12" inputmode="numeric" autocomplete="off" required>
+        <div class="hint">12 digits. Your full Aadhaar number is not stored.</div>
+      </div>
+
+      <div>
+        <label>Date of Birth *</label>
+        <input id="c_dob" type="date" required>
+        <div class="hint">As per Aadhaar.</div>
+      </div>
+
+      <div>
+        <label>Gender *</label>
+        <select id="c_gender" required>
+          <option value="">Select Gender</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="T">Transgender</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Mobile Number *</label>
+        <input id="c_mobile" maxlength="10" inputmode="numeric" autocomplete="tel-national" required>
+        <div class="hint">10 digit mobile number.</div>
+      </div>
+    </div>
+
+    <div class="consent-box">
+      <div class="consent-line" style="margin-top:0;">
+        <input type="checkbox" id="c_consent" required>
+        <span>I consent to the use of my Aadhaar details to create or retrieve my ABC/APAAR ID.</span>
+      </div>
+    </div>
+
+    <button id="createBtn" type="submit">Get my APAAR ID</button>
+
+    <button type="button" class="link-btn" data-switch="verify" style="display:block; margin:14px auto 0;">
+      Already have APAAR ID? Verify it
+    </button>
+  </form>
+
+  <div id="trackerArea"></div>
   <div id="responseArea"></div>
 </div>
 
@@ -372,6 +619,9 @@ for (let y = new Date().getFullYear(); y >= 1950; y--) {
   opt.textContent = y;
   yearSelect.appendChild(opt);
 }
+
+// Date of birth cannot be in the future
+document.getElementById("c_dob").max = new Date().toISOString().split("T")[0];
 
 // Consent date/time (updates every second)
 function setDateTime() {
@@ -423,10 +673,18 @@ function autoFillSelf() {
 
 document.getElementById("name").addEventListener("input", autoFillSelf);
 
-document.getElementById("apaar_id").addEventListener("input", function() {
-  this.value = this.value.replace(/\D/g, "").slice(0, 12);
-  autoFillSelf();
-});
+// Keep only digits in number fields
+function digitsOnly(id, maxLength) {
+  document.getElementById(id).addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "").slice(0, maxLength);
+  });
+}
+
+digitsOnly("apaar_id", 12);
+digitsOnly("c_aadhaar", 12);
+digitsOnly("c_mobile", 10);
+
+document.getElementById("apaar_id").addEventListener("input", autoFillSelf);
 
 document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
   radio.addEventListener("change", function() {
@@ -445,12 +703,10 @@ document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
 });
 
 // Remove red border as soon as the user edits a field
-["apaar_id", "name", "year_of_birth", "gender", "provider_name", "authentication_id_no", "place"]
-  .forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener("input", () => el.classList.remove("input-error"));
-    el.addEventListener("change", () => el.classList.remove("input-error"));
-  });
+document.querySelectorAll("input, select").forEach(el => {
+  el.addEventListener("input", () => el.classList.remove("input-error"));
+  el.addEventListener("change", () => el.classList.remove("input-error"));
+});
 
 // Convert "DD/MM/YYYY" to "YYYY-MM-DD" for <input type="date">
 function convertDobToDateInput(dob) {
@@ -458,6 +714,82 @@ function convertDobToDateInput(dob) {
   const parts = String(dob).split("/");
   return `${parts[2]}-${parts[1]}-${parts[0]}`;
 }
+
+// Convert "YYYY-MM-DD" (from <input type="date">) to "DD/MM/YYYY" for the API
+function convertDateInputToDob(value) {
+  if (!value) return "";
+  const [y, m, d] = value.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+// Group digits for display, e.g. "340917551754" -> "3409 1755 1754"
+function groupDigits(value) {
+  return String(value || "").replace(/(\d{4})(?=\d)/g, "$1 ");
+}
+
+// =====================================================
+// AADHAAR NUMBER CHECK (Verhoeff checksum)
+// Catches most typing mistakes before calling the API
+// =====================================================
+
+const VERHOEFF_D = [
+  [0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],
+  [3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],
+  [6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],
+  [9,8,7,6,5,4,3,2,1,0]
+];
+
+const VERHOEFF_P = [
+  [0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[5,8,0,3,7,9,6,1,4,2],
+  [8,9,1,6,0,4,3,5,2,7],[9,4,5,3,1,2,6,8,7,0],[4,2,8,6,5,7,3,9,0,1],
+  [2,7,9,3,8,0,6,4,1,5],[7,0,4,6,9,1,3,2,5,8]
+];
+
+function isValidAadhaar(number) {
+  if (!/^[2-9][0-9]{11}$/.test(number)) return false;
+
+  let check = 0;
+  number.split("").reverse().map(Number).forEach((digit, i) => {
+    check = VERHOEFF_D[check][VERHOEFF_P[i % 8][digit]];
+  });
+
+  return check === 0;
+}
+
+// =====================================================
+// MODE SWITCH (Verify / Create)
+// =====================================================
+
+let currentMode = "verify";
+
+function switchMode(mode) {
+  currentMode = mode;
+
+  document.getElementById("verifyForm").hidden = mode !== "verify";
+  document.getElementById("createForm").hidden = mode !== "create";
+
+  document.querySelectorAll(".tabs .tab").forEach(tab => {
+    const active = tab.dataset.mode === mode;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+  });
+
+  // Clear old results when switching
+  document.getElementById("trackerArea").innerHTML = "";
+  document.getElementById("responseArea").innerHTML = "";
+  clearHighlights();
+}
+
+document.querySelectorAll(".tabs .tab").forEach(tab => {
+  tab.addEventListener("click", () => switchMode(tab.dataset.mode));
+});
+
+document.querySelectorAll("[data-switch]").forEach(link => {
+  link.addEventListener("click", () => {
+    switchMode(link.dataset.switch);
+    document.querySelector(".tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
 
 // =====================================================
 // ERROR HANDLING HELPERS
@@ -473,7 +805,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-// Human-friendly names for API field keys (old and new formats)
+// Human-friendly names for API field keys
 const FIELD_LABELS = {
   apaarId: "ABC/APAAR ID",
   apaar_id: "ABC/APAAR ID",
@@ -486,30 +818,47 @@ const FIELD_LABELS = {
   userId: "User ID",
   purpose: "Purpose",
   is_consent_true: "Consent",
+  consent: "Consent",
   place: "Consent Place",
-  consent_place: "Consent Place"
+  consent_place: "Consent Place",
+  aadhaar_number: "Aadhaar Number",
+  dob: "Date of Birth",
+  mobile: "Mobile Number",
+  ai_nad_id: "Institution NAD ID"
 };
 
-// Which form input should be highlighted for each API field
+// Which form input to highlight for each API field, per mode
 const FIELD_TO_INPUT = {
-  apaarId: "apaar_id",
-  apaar_id: "apaar_id",
-  aadhaar_name: "name",
-  name: "name",
-  year_of_birth: "year_of_birth",
-  gender: "gender",
-  place: "place",
-  consent_place: "place"
+  verify: {
+    apaarId: "apaar_id",
+    apaar_id: "apaar_id",
+    aadhaar_name: "name",
+    name: "name",
+    year_of_birth: "year_of_birth",
+    gender: "gender",
+    place: "place",
+    consent_place: "place"
+  },
+  create: {
+    aadhaar_name: "c_name",
+    aadhaar_number: "c_aadhaar",
+    dob: "c_dob",
+    gender: "c_gender",
+    mobile: "c_mobile",
+    consent: "c_consent"
+  }
 };
+
+function cleanKey(key) {
+  return String(key).replace(/"/g, "").trim();
+}
 
 function fieldLabel(key) {
-  const cleanKey = String(key).replace(/"/g, "").trim();
-  return FIELD_LABELS[cleanKey] || cleanKey;
+  return FIELD_LABELS[cleanKey(key)] || cleanKey(key);
 }
 
 function highlightInput(apiKey) {
-  const cleanKey = String(apiKey).replace(/"/g, "").trim();
-  const inputId = FIELD_TO_INPUT[cleanKey];
+  const inputId = FIELD_TO_INPUT[currentMode][cleanKey(apiKey)];
   if (inputId) {
     document.getElementById(inputId).classList.add("input-error");
   }
@@ -521,14 +870,17 @@ function clearHighlights() {
 
 // Short guidance line shown under the error message
 function getErrorHint(err) {
-  const code = String(err.status_code || "");
+  const code = String(err.status_code || err.statuscode || "");
   const msg = String(err.message || "").toLowerCase();
 
   if (err.match_data_status) {
     return "Please enter Name, Year of Birth and Gender exactly as per Aadhaar, then try again.";
   }
+  if (msg.includes("aadhaar details")) {
+    return "Enter name, Aadhaar number, date of birth and gender exactly as printed on the Aadhaar card.";
+  }
   if (msg.includes("does not exist")) {
-    return "Please check the ABC/APAAR ID and try again.";
+    return "Please check the ABC/APAAR ID and try again. If you don't have one, use the \"Don't have / forgot APAAR ID\" option.";
   }
   if (code === "422" || err.errors) {
     return "Please correct the fields listed below and try again.";
@@ -537,7 +889,7 @@ function getErrorHint(err) {
     return "Authorization problem with the API credentials. Please contact the administrator.";
   }
   if (code.startsWith("5") || err.network) {
-    return "The verification service is not responding right now. Please try again in a minute.";
+    return "The service is not responding right now. Please try again in a minute.";
   }
   return "Please check the details and try again.";
 }
@@ -600,20 +952,20 @@ function buildMatchTable(matchData) {
 }
 
 // Main error renderer: works for every fail response format
-function renderError(rawError) {
-  // API can send an object or an array with one object
+function renderError(rawError, title) {
+  // API can send an object, an array with one object, or plain text
   let err = Array.isArray(rawError) ? rawError[0] : rawError;
   if (!err || typeof err !== "object") {
     err = { message: String(rawError || "Something went wrong.") };
   }
 
-  const message = err.message || "Verification failed.";
+  const message = err.message || "Request failed.";
   const txnId = err.txnId || err.txn_id || "";
   const dateTime = err.date_time || "";
-  const statusCode = err.status_code || "";
+  const statusCode = err.status_code || err.statuscode || "";
   const messageCode = err.message_code || "";
 
-  let metaParts = [];
+  const metaParts = [];
   if (statusCode) metaParts.push("Status: " + escapeHtml(statusCode));
   if (messageCode) metaParts.push("Code: " + escapeHtml(messageCode));
   if (txnId) metaParts.push("Txn ID: " + escapeHtml(txnId));
@@ -621,7 +973,7 @@ function renderError(rawError) {
 
   return `
     <div class="error-card">
-      <h3>Verification Failed</h3>
+      <h3>${escapeHtml(title || "Verification Failed")}</h3>
       <div class="error-message">${escapeHtml(message)}</div>
       <div class="error-hint">${escapeHtml(getErrorHint(err))}</div>
 
@@ -639,27 +991,287 @@ function renderError(rawError) {
 }
 
 // =====================================================
-// SUBMIT
+// LIVE PROCESS TRACKER
 // =====================================================
+
+// "connect" runs in the browser, the rest are reported by the server
+const VERIFY_STEPS = [
+  { id: "connect", label: "Connecting to server" },
+  { id: "token",   label: "Generating access token" },
+  { id: "encrypt", label: "Encrypting data with AES-256-GCM" },
+  { id: "verify",  label: "Sending encrypted data to APAAR API" },
+  { id: "result",  label: "Checking verification result" }
+];
+
+const CREATE_STEPS = [
+  { id: "connect", label: "Connecting to server" },
+  { id: "check",   label: "Checking entered details" },
+  { id: "token",   label: "Generating access token" },
+  { id: "create",  label: "Sending Aadhaar details to APAAR API" },
+  { id: "result",  label: "Reading APAAR ID from response" }
+];
+
+const STEP_ICONS = { done: "&#10003;", error: "&#10005;", skipped: "&ndash;" };
+
+let activeSteps = [];
+
+function formatMs(ms) {
+  if (ms === undefined || ms === null) return "";
+  if (ms < 1) return "< 1 ms";
+  if (ms < 1000) return Math.round(ms) + " ms";
+  return (ms / 1000).toFixed(2) + " s";
+}
+
+function renderTracker(steps, title) {
+  activeSteps = steps;
+
+  let html = `<div class="tracker"><h3>${escapeHtml(title)}</h3>`;
+
+  steps.forEach(step => {
+    html += `
+      <div class="tracker-step pending" id="step-${step.id}">
+        <div class="step-icon"></div>
+        <div>
+          <div class="step-label">${escapeHtml(step.label)}</div>
+          <div class="step-detail"></div>
+        </div>
+        <div class="step-time"></div>
+      </div>`;
+  });
+
+  html += '<div class="tracker-total" id="trackerTotal" hidden><span>Total time</span><span></span></div>';
+  html += "</div>";
+
+  document.getElementById("trackerArea").innerHTML = html;
+}
+
+function setStep(id, status, ms, detail) {
+  const row = document.getElementById("step-" + id);
+  if (!row) return;
+
+  row.className = "tracker-step " + status;
+  row.querySelector(".step-icon").innerHTML = STEP_ICONS[status] || "";
+  row.querySelector(".step-time").textContent = formatMs(ms);
+
+  if (detail !== undefined) {
+    row.querySelector(".step-detail").textContent = detail;
+  }
+}
+
+// After a failure, mark every step that never ran as skipped
+function skipRemainingSteps() {
+  activeSteps.forEach(step => {
+    const row = document.getElementById("step-" + step.id);
+    if (row && (row.classList.contains("pending") || row.classList.contains("running"))) {
+      setStep(step.id, "skipped");
+    }
+  });
+}
+
+function showTotal(ms) {
+  const total = document.getElementById("trackerTotal");
+  total.hidden = false;
+  total.querySelector("span:last-child").textContent = formatMs(ms);
+}
+
+// Read the NDJSON stream line by line and call onEvent for each object
+async function readEventStream(response, onEvent) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    let newlineIndex;
+    while ((newlineIndex = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, newlineIndex).trim();
+      buffer = buffer.slice(newlineIndex + 1);
+      if (line) onEvent(JSON.parse(line));
+    }
+  }
+
+  if (buffer.trim()) onEvent(JSON.parse(buffer.trim()));
+}
+
+// Shared runner: POST to the server, drive the tracker, return the final result
+async function runWithTracker({ url, payload, steps, title, button, busyText }) {
+  const idleText = button.innerText;
+  const trackerArea = document.getElementById("trackerArea");
+
+  button.disabled = true;
+  button.innerText = busyText;
+  document.getElementById("responseArea").innerHTML = "";
+
+  renderTracker(steps, title);
+  trackerArea.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // Stop waiting after 90 seconds (free Render instance can be slow to wake up)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+  const connectStart = performance.now();
+  setStep("connect", "running");
+
+  // If the server is asleep, tell the audience why it is taking long
+  const slowTimer = setTimeout(() => {
+    setStep("connect", "running", undefined,
+      "Free server is waking up, this can take up to a minute on the first request");
+  }, 4000);
+
+  let finalData = null;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    clearTimeout(slowTimer);
+
+    const contentType = response.headers.get("content-type") || "";
+
+    if (!contentType.includes("ndjson")) {
+      // Not our stream (for example a 502 HTML page from the host)
+      setStep("connect", "error", performance.now() - connectStart,
+        "Server returned HTTP " + response.status);
+      finalData = {
+        success: false,
+        error: {
+          status_code: response.status,
+          message: "Server returned an unexpected response.",
+          network: true
+        }
+      };
+    } else {
+      setStep("connect", "done", performance.now() - connectStart, "Connected");
+
+      await readEventStream(response, event => {
+        if (event.type === "step") {
+          setStep(event.id, event.status, event.ms, event.detail);
+        } else if (event.type === "result") {
+          finalData = event;
+        }
+      });
+
+      if (!finalData) {
+        finalData = {
+          success: false,
+          error: { message: "Connection closed before the result arrived.", network: true }
+        };
+      }
+    }
+
+  } catch (err) {
+    clearTimeout(slowTimer);
+    const isTimeout = err.name === "AbortError";
+
+    const connectRow = document.getElementById("step-connect");
+    if (connectRow && connectRow.classList.contains("running")) {
+      setStep("connect", "error", performance.now() - connectStart,
+        isTimeout ? "No response within 90 seconds" : "Could not reach the server");
+    }
+
+    finalData = {
+      success: false,
+      error: {
+        message: isTimeout ? "The request took too long." : "Could not connect to the server.",
+        network: true
+      }
+    };
+  } finally {
+    clearTimeout(timeoutId);
+
+    if (!finalData.success) skipRemainingSteps();
+
+    // Total = full time the user waited, from click to result
+    showTotal(performance.now() - connectStart);
+
+    button.disabled = false;
+    button.innerText = idleText;
+  }
+
+  // Short pause so the last tick is visible before the result appears
+  await new Promise(resolve => setTimeout(resolve, 400));
+  return finalData;
+}
+
+// =====================================================
+// MODE 1: VERIFY APAAR ID
+// =====================================================
+
+function renderVerifySuccess(apiData) {
+  return `
+    <div class="result-card">
+      <h3>Information received from ABC/APAAR ID Verification System</h3>
+
+      <table>
+        <tr><td>ABC/APAAR ID</td><td>${escapeHtml(apiData.ABC_ACCOUNT_ID)}</td></tr>
+        <tr><td>Candidate Name in APAAR</td><td>${escapeHtml(apiData.CNAME)}</td></tr>
+        <tr><td>Gender</td><td>${escapeHtml(apiData.GENDER)}</td></tr>
+        <tr><td>Date of Birth in APAAR</td><td>${escapeHtml(apiData.DOB)}</td></tr>
+      </table>
+
+      <h3 style="margin-top:25px;">Candidate Registration Details</h3>
+
+      <div class="grid">
+        <div>
+          <label>Candidate Name as per 10th</label>
+          <input id="reg_name" value="${escapeHtml(apiData.CNAME)}">
+        </div>
+
+        <div>
+          <label>Date of Birth</label>
+          <input type="date" value="${escapeHtml(convertDobToDateInput(apiData.DOB))}">
+        </div>
+
+        <div>
+          <label>Email</label>
+          <input type="email" placeholder="Enter email">
+        </div>
+
+        <div>
+          <label>Mobile Number</label>
+          <input type="tel" placeholder="Enter mobile number">
+        </div>
+
+        <div>
+          <label>Father / Guardian Name</label>
+          <input placeholder="Enter father/guardian name">
+        </div>
+
+        <div>
+          <label>Address</label>
+          <input placeholder="Enter address">
+        </div>
+      </div>
+
+      <button type="button" onclick="showNextMessage()">NEXT</button>
+
+      <div id="nextMessage"></div>
+    </div>
+  `;
+}
 
 document.getElementById("verifyForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const apaarId = document.getElementById("apaar_id").value;
-  const btn = document.getElementById("verifyBtn");
   const responseArea = document.getElementById("responseArea");
 
   clearHighlights();
 
   if (!/^[0-9]{12}$/.test(apaarId)) {
     document.getElementById("apaar_id").classList.add("input-error");
+    document.getElementById("trackerArea").innerHTML = "";
     responseArea.innerHTML = renderError({ message: "ABC/APAAR ID must be exactly 12 digits." });
     return;
   }
-
-  btn.disabled = true;
-  btn.innerText = "Verifying...";
-  responseArea.innerHTML = "";
 
   const payload = {
     apaar_id: apaarId,
@@ -675,107 +1287,120 @@ document.getElementById("verifyForm").addEventListener("submit", async function(
     place: document.getElementById("place").value.trim()
   };
 
-  // Stop waiting after 90 seconds (free Render instance can be slow to wake up)
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 90000);
+  const data = await runWithTracker({
+    url: "/verify",
+    payload,
+    steps: VERIFY_STEPS,
+    title: "Verification process",
+    button: document.getElementById("verifyBtn"),
+    busyText: "Verifying..."
+  });
 
-  try {
-    const response = await fetch("/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
+  const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
 
-    // Server may return HTML (e.g. 502 page) instead of JSON, so parse safely
-    const text = await response.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (parseError) {
-      data = {
-        success: false,
-        error: {
-          status_code: response.status,
-          message: "Server returned an unexpected response.",
-          network: true
-        }
-      };
-    }
+  if (data.success && apiData && apiData.status === "success") {
+    responseArea.innerHTML = renderVerifySuccess(apiData);
+  } else {
+    responseArea.innerHTML = renderError(data.error || data.response || data, "Verification Failed");
+  }
+});
 
-    const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
+// =====================================================
+// MODE 2: CREATE / GET APAAR ID USING AADHAAR
+// =====================================================
 
-    if (data.success && apiData && apiData.status === "success") {
-      responseArea.innerHTML = `
-        <div class="result-card">
-          <h3>Information received from ABC/APAAR ID Verification System</h3>
+// Details of the last created ID, used by "Verify this APAAR ID now"
+let lastCreated = null;
 
-          <table>
-            <tr><td>ABC/APAAR ID</td><td>${escapeHtml(apiData.ABC_ACCOUNT_ID)}</td></tr>
-            <tr><td>Candidate Name in APAAR</td><td>${escapeHtml(apiData.CNAME)}</td></tr>
-            <tr><td>Gender</td><td>${escapeHtml(apiData.GENDER)}</td></tr>
-            <tr><td>Date of Birth in APAAR</td><td>${escapeHtml(apiData.DOB)}</td></tr>
-          </table>
+function renderCreateSuccess(apiData) {
+  return `
+    <div class="result-card">
+      <h3>${escapeHtml(apiData.message || "ABC ID created successfully")}</h3>
 
-          <h3 style="margin-top:25px;">Candidate Registration Details</h3>
+      <p class="center" style="margin:10px 0 0;">Your ABC/APAAR ID</p>
+      <div class="big-id">${escapeHtml(groupDigits(apiData.ABC_ACCOUNT_ID))}</div>
+      <p class="center hint">Candidate: ${escapeHtml(lastCreated.name)}</p>
 
-          <div class="grid">
-            <div>
-              <label>Candidate Name as per 10th</label>
-              <input id="reg_name" value="${escapeHtml(apiData.CNAME)}">
-            </div>
+      <button type="button" onclick="useCreatedId()">Verify this APAAR ID now</button>
+    </div>
+  `;
+}
 
-            <div>
-              <label>Date of Birth</label>
-              <input type="date" value="${escapeHtml(convertDobToDateInput(apiData.DOB))}">
-            </div>
+// Switch to Verify mode with the new APAAR ID and details already filled in
+function useCreatedId() {
+  if (!lastCreated) return;
 
-            <div>
-              <label>Email</label>
-              <input type="email" placeholder="Enter email">
-            </div>
+  switchMode("verify");
 
-            <div>
-              <label>Mobile Number</label>
-              <input type="tel" placeholder="Enter mobile number">
-            </div>
+  document.getElementById("apaar_id").value = lastCreated.apaarId;
+  document.getElementById("name").value = lastCreated.name;
+  document.getElementById("year_of_birth").value = lastCreated.year;
+  document.getElementById("gender").value = lastCreated.gender;
+  autoFillSelf();
 
-            <div>
-              <label>Father / Guardian Name</label>
-              <input placeholder="Enter father/guardian name">
-            </div>
+  const btn = document.getElementById("verifyBtn");
+  btn.scrollIntoView({ behavior: "smooth", block: "center" });
+  btn.focus({ preventScroll: true });
+}
 
-            <div>
-              <label>Address</label>
-              <input placeholder="Enter address">
-            </div>
-          </div>
+document.getElementById("createForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-          <button type="button" onclick="showNextMessage()">NEXT</button>
+  const responseArea = document.getElementById("responseArea");
+  clearHighlights();
 
-          <div id="nextMessage"></div>
-        </div>
-      `;
-    } else {
-      // Fail case: error can come in data.error or in data.response
-      responseArea.innerHTML = renderError(data.error || data.response || data);
-    }
+  const name = document.getElementById("c_name").value.trim();
+  const aadhaar = document.getElementById("c_aadhaar").value;
+  const dobInput = document.getElementById("c_dob").value;
+  const gender = document.getElementById("c_gender").value;
+  const mobile = document.getElementById("c_mobile").value;
+  const consent = document.getElementById("c_consent").checked;
 
-  } catch (err) {
-    const isTimeout = err.name === "AbortError";
+  // Quick checks in the browser before calling the server
+  const errors = {};
+  if (!isValidAadhaar(aadhaar)) errors.aadhaar_number = ["Please enter a valid 12 digit Aadhaar number."];
+  if (!/^[6-9][0-9]{9}$/.test(mobile)) errors.mobile = ["Mobile number must be 10 digits and start with 6, 7, 8 or 9."];
+  if (!consent) errors.consent = ["Please give consent to continue."];
 
-    responseArea.innerHTML = renderError({
-      message: isTimeout
-        ? "The request took too long."
-        : "Could not connect to the server.",
-      network: true
-    });
-  } finally {
-    // Always re-enable the button, even if something failed
-    clearTimeout(timeoutId);
-    btn.disabled = false;
-    btn.innerText = "Verify the Details";
-    responseArea.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (Object.keys(errors).length) {
+    document.getElementById("trackerArea").innerHTML = "";
+    responseArea.innerHTML = renderError(
+      { status: "fail", message: "Please correct the details.", errors },
+      "Could not get APAAR ID"
+    );
+    return;
+  }
+
+  const dob = convertDateInputToDob(dobInput);
+
+  const data = await runWithTracker({
+    url: "/create-apaar",
+    payload: {
+      aadhaar_name: name,
+      aadhaar_number: aadhaar,
+      dob,
+      gender,
+      mobile,
+      consent
+    },
+    steps: CREATE_STEPS,
+    title: "Getting your APAAR ID",
+    button: document.getElementById("createBtn"),
+    busyText: "Please wait..."
+  });
+
+  const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
+
+  if (data.success && apiData && apiData.status === "success") {
+    lastCreated = {
+      apaarId: String(apiData.ABC_ACCOUNT_ID || ""),
+      name,
+      year: dobInput.split("-")[0],
+      gender
+    };
+    responseArea.innerHTML = renderCreateSuccess(apiData);
+  } else {
+    responseArea.innerHTML = renderError(data.error || data.response || data, "Could not get APAAR ID");
   }
 });
 
