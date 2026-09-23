@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ABC/APAAR ID Verification</title>
   <style>
     body {
@@ -19,6 +21,7 @@
       margin: 25px auto;
       padding: 34px;
       border-radius: 12px;
+      box-sizing: border-box;
     }
 
     h1 {
@@ -54,6 +57,12 @@
       box-sizing: border-box;
     }
 
+    /* Red border on fields that failed verification */
+    .input-error {
+      border: 2px solid #d33 !important;
+      background: #fff6f6;
+    }
+
     .hint {
       font-size: 12px;
       color: #555;
@@ -86,6 +95,7 @@
     .consent-line input {
       width: 18px;
       height: 18px;
+      flex-shrink: 0;
     }
 
     details {
@@ -115,6 +125,11 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: .7;
+      cursor: wait;
+    }
+
     .result-card {
       margin-top: 25px;
       padding: 22px;
@@ -123,13 +138,87 @@
       border-radius: 8px;
     }
 
+    /* ---------- Error card ---------- */
     .error-card {
       margin-top: 25px;
-      padding: 18px;
+      padding: 20px;
       background: #fff1f1;
       border: 1px solid #e19b9b;
-      color: #900;
+      color: #7a0000;
       border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .error-card h3 {
+      color: #b00000;
+      margin-bottom: 8px;
+    }
+
+    .error-message {
+      text-align: center;
+      font-size: 17px;
+      font-weight: bold;
+      margin: 8px 0 4px;
+    }
+
+    .error-hint {
+      text-align: center;
+      font-size: 14px;
+      color: #5a2a2a;
+      margin-bottom: 12px;
+    }
+
+    .error-list {
+      background: #fff;
+      border: 1px solid #f0c2c2;
+      border-radius: 6px;
+      padding: 12px 16px 12px 34px;
+      margin: 12px 0;
+      color: #333;
+    }
+
+    .error-list li {
+      margin: 6px 0;
+    }
+
+    .error-list b {
+      color: #900;
+    }
+
+    .error-card table td {
+      background: #fff;
+      color: #333;
+    }
+
+    .match-ok {
+      color: #1a7f1a;
+      font-weight: bold;
+    }
+
+    .match-bad {
+      color: #c00;
+      font-weight: bold;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: #666;
+      margin-top: 12px;
+    }
+
+    .error-card details {
+      margin-top: 12px;
+    }
+
+    /* Raw JSON: wrap long lines so the card never breaks the layout */
+    .error-card pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+      max-width: 100%;
+      font-size: 12px;
+      color: #333;
+      margin: 10px 0 0;
     }
 
     table {
@@ -162,6 +251,7 @@
 
     @media(max-width: 700px) {
       .grid { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
     }
   </style>
 </head>
@@ -178,7 +268,7 @@
     <div class="grid">
       <div>
         <label>ABC/APAAR ID *</label>
-        <input id="apaar_id" maxlength="12" required>
+        <input id="apaar_id" maxlength="12" inputmode="numeric" required>
         <div class="hint">Only 12 digit numerical value allowed.</div>
       </div>
 
@@ -268,18 +358,22 @@
 </div>
 
 <script>
-  // Year dropdown
+// =====================================================
+// FORM SETUP
+// =====================================================
+
+// Year dropdown
 const yearSelect = document.getElementById("year_of_birth");
 yearSelect.innerHTML = '<option value="">Select Year</option>';
 
-for (let y = 2026; y >= 1950; y--) {
+for (let y = new Date().getFullYear(); y >= 1950; y--) {
   const opt = document.createElement("option");
   opt.value = y;
   opt.textContent = y;
   yearSelect.appendChild(opt);
 }
 
-// Consent date/time
+// Consent date/time (updates every second)
 function setDateTime() {
   const now = new Date();
 
@@ -300,7 +394,7 @@ function setDateTime() {
 setDateTime();
 setInterval(setDateTime, 1000);
 
-// Location auto-fill, only alphabets and spaces
+// Location auto-fill (only alphabets and spaces allowed)
 fetch("https://ipapi.co/json/")
   .then(response => response.json())
   .then(data => {
@@ -316,163 +410,381 @@ fetch("https://ipapi.co/json/")
     document.getElementById("place").value = "India";
   });
 
-  function autoFillSelf() {
-    const relation = document.querySelector("input[name='consent_relation']:checked").value;
+// When consent is SELF, copy candidate details into provider details
+function autoFillSelf() {
+  const relation = document.querySelector("input[name='consent_relation']:checked").value;
 
-    if (relation === "Self") {
-      document.getElementById("provider_name").value = document.getElementById("name").value;
-      document.getElementById("authentication_mode").value = "UID";
-      document.getElementById("authentication_id_no").value = document.getElementById("apaar_id").value;
-    }
+  if (relation === "Self") {
+    document.getElementById("provider_name").value = document.getElementById("name").value;
+    document.getElementById("authentication_mode").value = "UID";
+    document.getElementById("authentication_id_no").value = document.getElementById("apaar_id").value;
   }
+}
 
-  document.getElementById("name").addEventListener("input", autoFillSelf);
+document.getElementById("name").addEventListener("input", autoFillSelf);
 
-  document.getElementById("apaar_id").addEventListener("input", function() {
-    this.value = this.value.replace(/\D/g, "").slice(0, 12);
-    autoFillSelf();
+document.getElementById("apaar_id").addEventListener("input", function() {
+  this.value = this.value.replace(/\D/g, "").slice(0, 12);
+  autoFillSelf();
+});
+
+document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
+  radio.addEventListener("change", function() {
+    const details = document.getElementById("providerDetails");
+
+    if (this.value === "Self") {
+      details.open = false;
+      autoFillSelf();
+    } else {
+      details.open = true;
+      document.getElementById("provider_name").value = "";
+      document.getElementById("authentication_mode").value = "UID";
+      document.getElementById("authentication_id_no").value = "";
+    }
+  });
+});
+
+// Remove red border as soon as the user edits a field
+["apaar_id", "name", "year_of_birth", "gender", "provider_name", "authentication_id_no", "place"]
+  .forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("input", () => el.classList.remove("input-error"));
+    el.addEventListener("change", () => el.classList.remove("input-error"));
   });
 
-  document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
-    radio.addEventListener("change", function() {
-      const details = document.getElementById("providerDetails");
+// Convert "DD/MM/YYYY" to "YYYY-MM-DD" for <input type="date">
+function convertDobToDateInput(dob) {
+  if (!dob || !String(dob).includes("/")) return "";
+  const parts = String(dob).split("/");
+  return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
 
-      if (this.value === "Self") {
-        details.open = false;
-        autoFillSelf();
-      } else {
-        details.open = true;
-        document.getElementById("provider_name").value = "";
-        document.getElementById("authentication_mode").value = "UID";
-        document.getElementById("authentication_id_no").value = "";
-      }
+// =====================================================
+// ERROR HANDLING HELPERS
+// =====================================================
+
+// Escape text before putting it into HTML (prevents broken layout / XSS)
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Human-friendly names for API field keys (old and new formats)
+const FIELD_LABELS = {
+  apaarId: "ABC/APAAR ID",
+  apaar_id: "ABC/APAAR ID",
+  aadhaar_name: "Name",
+  name: "Name",
+  year_of_birth: "Year of Birth",
+  gender: "Gender",
+  txnId: "Transaction ID",
+  txn_id: "Transaction ID",
+  userId: "User ID",
+  purpose: "Purpose",
+  is_consent_true: "Consent",
+  place: "Consent Place",
+  consent_place: "Consent Place"
+};
+
+// Which form input should be highlighted for each API field
+const FIELD_TO_INPUT = {
+  apaarId: "apaar_id",
+  apaar_id: "apaar_id",
+  aadhaar_name: "name",
+  name: "name",
+  year_of_birth: "year_of_birth",
+  gender: "gender",
+  place: "place",
+  consent_place: "place"
+};
+
+function fieldLabel(key) {
+  const cleanKey = String(key).replace(/"/g, "").trim();
+  return FIELD_LABELS[cleanKey] || cleanKey;
+}
+
+function highlightInput(apiKey) {
+  const cleanKey = String(apiKey).replace(/"/g, "").trim();
+  const inputId = FIELD_TO_INPUT[cleanKey];
+  if (inputId) {
+    document.getElementById(inputId).classList.add("input-error");
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+}
+
+// Short guidance line shown under the error message
+function getErrorHint(err) {
+  const code = String(err.status_code || "");
+  const msg = String(err.message || "").toLowerCase();
+
+  if (err.match_data_status) {
+    return "Please enter Name, Year of Birth and Gender exactly as per Aadhaar, then try again.";
+  }
+  if (msg.includes("does not exist")) {
+    return "Please check the ABC/APAAR ID and try again.";
+  }
+  if (code === "422" || err.errors) {
+    return "Please correct the fields listed below and try again.";
+  }
+  if (code === "401" || code === "403") {
+    return "Authorization problem with the API credentials. Please contact the administrator.";
+  }
+  if (code.startsWith("5") || err.network) {
+    return "The verification service is not responding right now. Please try again in a minute.";
+  }
+  return "Please check the details and try again.";
+}
+
+// Build the list of validation errors: { field: ["msg1", "msg2"] }
+function buildValidationList(errors) {
+  if (!errors || typeof errors !== "object") return "";
+
+  let items = "";
+
+  Object.keys(errors).forEach(key => {
+    const messages = Array.isArray(errors[key]) ? errors[key] : [errors[key]];
+    highlightInput(key);
+
+    messages.forEach(m => {
+      items += `<li><b>${escapeHtml(fieldLabel(key))}:</b> ${escapeHtml(m)}</li>`;
     });
   });
 
-  function convertDobToDateInput(dob) {
-    if (!dob || !dob.includes("/")) return "";
-    const parts = dob.split("/");
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
+  return items ? `<ul class="error-list">${items}</ul>` : "";
+}
 
-  document.getElementById("verifyForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+// Build the match table for "Input details does not match" (E-321)
+function buildMatchTable(matchData) {
+  if (!matchData || typeof matchData !== "object") return "";
 
-    const apaarId = document.getElementById("apaar_id").value;
+  const input = matchData.input_data || {};
 
-    if (!/^[0-9]{12}$/.test(apaarId)) {
-      alert("ABC/APAAR ID must be exactly 12 digits.");
-      return;
+  const rows = [
+    { label: "Name", match: matchData.student_name_match, value: input.student_name_in_school, inputId: "name" },
+    { label: "Year of Birth", match: matchData.year_of_birth, value: input.year_of_birth, inputId: "year_of_birth" },
+    { label: "Gender", match: matchData.gender_match, value: input.gender, inputId: "gender" }
+  ];
+
+  let html = "<table>";
+
+  rows.forEach(row => {
+    if (row.match === undefined) return;
+
+    const ok = row.match === true || row.match === "true";
+    if (!ok) {
+      document.getElementById(row.inputId).classList.add("input-error");
     }
 
-    const btn = document.getElementById("verifyBtn");
-    const responseArea = document.getElementById("responseArea");
-
-    btn.disabled = true;
-    btn.innerText = "Verifying...";
-    responseArea.innerHTML = "";
-
-    const payload = {
-      apaar_id: apaarId,
-      name: document.getElementById("name").value,
-      year_of_birth: document.getElementById("year_of_birth").value,
-      gender: document.getElementById("gender").value,
-      consent_relation: document.querySelector("input[name='consent_relation']:checked").value,
-      provider_name: document.getElementById("provider_name").value,
-      authentication_mode: document.getElementById("authentication_mode").value,
-      authentication_id_no: document.getElementById("authentication_id_no").value,
-      consent_date: document.getElementById("consent_date").value,
-      consent_time: document.getElementById("consent_time").value,
-      place: document.getElementById("place").value
-    };
-
-    try {
-      const response = await fetch("/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-      const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
-
-      if (data.success && apiData && apiData.status === "success") {
-        responseArea.innerHTML = `
-          <div class="result-card">
-            <h3>Information received from ABC/APAAR ID Verification System</h3>
-
-            <table>
-              <tr><td>ABC/APAAR ID</td><td>${apiData.ABC_ACCOUNT_ID || ""}</td></tr>
-              <tr><td>Candidate Name in APAAR</td><td>${apiData.CNAME || ""}</td></tr>
-              <tr><td>Gender</td><td>${apiData.GENDER || ""}</td></tr>
-              <tr><td>Date of Birth in APAAR</td><td>${apiData.DOB || ""}</td></tr>
-            </table>
-
-            <h3 style="margin-top:25px;">Candidate Registration Details</h3>
-
-            <div class="grid">
-              <div>
-                <label>Candidate Name as per 10th</label>
-                <input id="reg_name" value="${apiData.CNAME || ""}">
-              </div>
-
-              <div>
-                <label>Date of Birth</label>
-                <input type="date" value="${convertDobToDateInput(apiData.DOB)}">
-              </div>
-
-              <div>
-                <label>Email</label>
-                <input placeholder="Enter email">
-              </div>
-
-              <div>
-                <label>Mobile Number</label>
-                <input placeholder="Enter mobile number">
-              </div>
-
-              <div>
-                <label>Father / Guardian Name</label>
-                <input placeholder="Enter father/guardian name">
-              </div>
-
-              <div>
-                <label>Address</label>
-                <input placeholder="Enter address">
-              </div>
-            </div>
-
-            <button type="button" onclick="showNextMessage()">NEXT</button>
-
-            <div id="nextMessage"></div>
-          </div>
-        `;
-      } else {
-        responseArea.innerHTML = `
-          <div class="error-card">
-            <h3>Verification Failed</h3>
-            <pre>${JSON.stringify(data.error || data.response || data, null, 2)}</pre>
-          </div>
-        `;
-      }
-
-    } catch (err) {
-      responseArea.innerHTML = `
-        <div class="error-card">
-          <h3>Error</h3>
-          <pre>${err.message}</pre>
-        </div>
-      `;
-    }
-
-    btn.disabled = false;
-    btn.innerText = "Verify the Details";
+    html += `
+      <tr>
+        <td>${escapeHtml(row.label)}</td>
+        <td>
+          ${escapeHtml(row.value)}
+          &nbsp;
+          <span class="${ok ? "match-ok" : "match-bad"}">
+            ${ok ? "&#10004; Matched" : "&#10008; Not matched"}
+          </span>
+        </td>
+      </tr>`;
   });
 
-  function showNextMessage() {
+  html += "</table>";
+  return html;
+}
 
+// Main error renderer: works for every fail response format
+function renderError(rawError) {
+  // API can send an object or an array with one object
+  let err = Array.isArray(rawError) ? rawError[0] : rawError;
+  if (!err || typeof err !== "object") {
+    err = { message: String(rawError || "Something went wrong.") };
+  }
+
+  const message = err.message || "Verification failed.";
+  const txnId = err.txnId || err.txn_id || "";
+  const dateTime = err.date_time || "";
+  const statusCode = err.status_code || "";
+  const messageCode = err.message_code || "";
+
+  let metaParts = [];
+  if (statusCode) metaParts.push("Status: " + escapeHtml(statusCode));
+  if (messageCode) metaParts.push("Code: " + escapeHtml(messageCode));
+  if (txnId) metaParts.push("Txn ID: " + escapeHtml(txnId));
+  if (dateTime) metaParts.push("Time: " + escapeHtml(dateTime));
+
+  return `
+    <div class="error-card">
+      <h3>Verification Failed</h3>
+      <div class="error-message">${escapeHtml(message)}</div>
+      <div class="error-hint">${escapeHtml(getErrorHint(err))}</div>
+
+      ${buildValidationList(err.errors)}
+      ${buildMatchTable(err.match_data_status)}
+
+      ${metaParts.length ? `<div class="meta">${metaParts.join(" | ")}</div>` : ""}
+
+      <details>
+        <summary>Technical details</summary>
+        <pre>${escapeHtml(JSON.stringify(rawError, null, 2))}</pre>
+      </details>
+    </div>
+  `;
+}
+
+// =====================================================
+// SUBMIT
+// =====================================================
+
+document.getElementById("verifyForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const apaarId = document.getElementById("apaar_id").value;
+  const btn = document.getElementById("verifyBtn");
+  const responseArea = document.getElementById("responseArea");
+
+  clearHighlights();
+
+  if (!/^[0-9]{12}$/.test(apaarId)) {
+    document.getElementById("apaar_id").classList.add("input-error");
+    responseArea.innerHTML = renderError({ message: "ABC/APAAR ID must be exactly 12 digits." });
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Verifying...";
+  responseArea.innerHTML = "";
+
+  const payload = {
+    apaar_id: apaarId,
+    name: document.getElementById("name").value.trim(),
+    year_of_birth: document.getElementById("year_of_birth").value,
+    gender: document.getElementById("gender").value,
+    consent_relation: document.querySelector("input[name='consent_relation']:checked").value,
+    provider_name: document.getElementById("provider_name").value.trim(),
+    authentication_mode: document.getElementById("authentication_mode").value,
+    authentication_id_no: document.getElementById("authentication_id_no").value.trim(),
+    consent_date: document.getElementById("consent_date").value,
+    consent_time: document.getElementById("consent_time").value,
+    place: document.getElementById("place").value.trim()
+  };
+
+  // Stop waiting after 90 seconds (free Render instance can be slow to wake up)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+  try {
+    const response = await fetch("/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    // Server may return HTML (e.g. 502 page) instead of JSON, so parse safely
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      data = {
+        success: false,
+        error: {
+          status_code: response.status,
+          message: "Server returned an unexpected response.",
+          network: true
+        }
+      };
+    }
+
+    const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
+
+    if (data.success && apiData && apiData.status === "success") {
+      responseArea.innerHTML = `
+        <div class="result-card">
+          <h3>Information received from ABC/APAAR ID Verification System</h3>
+
+          <table>
+            <tr><td>ABC/APAAR ID</td><td>${escapeHtml(apiData.ABC_ACCOUNT_ID)}</td></tr>
+            <tr><td>Candidate Name in APAAR</td><td>${escapeHtml(apiData.CNAME)}</td></tr>
+            <tr><td>Gender</td><td>${escapeHtml(apiData.GENDER)}</td></tr>
+            <tr><td>Date of Birth in APAAR</td><td>${escapeHtml(apiData.DOB)}</td></tr>
+          </table>
+
+          <h3 style="margin-top:25px;">Candidate Registration Details</h3>
+
+          <div class="grid">
+            <div>
+              <label>Candidate Name as per 10th</label>
+              <input id="reg_name" value="${escapeHtml(apiData.CNAME)}">
+            </div>
+
+            <div>
+              <label>Date of Birth</label>
+              <input type="date" value="${escapeHtml(convertDobToDateInput(apiData.DOB))}">
+            </div>
+
+            <div>
+              <label>Email</label>
+              <input type="email" placeholder="Enter email">
+            </div>
+
+            <div>
+              <label>Mobile Number</label>
+              <input type="tel" placeholder="Enter mobile number">
+            </div>
+
+            <div>
+              <label>Father / Guardian Name</label>
+              <input placeholder="Enter father/guardian name">
+            </div>
+
+            <div>
+              <label>Address</label>
+              <input placeholder="Enter address">
+            </div>
+          </div>
+
+          <button type="button" onclick="showNextMessage()">NEXT</button>
+
+          <div id="nextMessage"></div>
+        </div>
+      `;
+    } else {
+      // Fail case: error can come in data.error or in data.response
+      responseArea.innerHTML = renderError(data.error || data.response || data);
+    }
+
+  } catch (err) {
+    const isTimeout = err.name === "AbortError";
+
+    responseArea.innerHTML = renderError({
+      message: isTimeout
+        ? "The request took too long."
+        : "Could not connect to the server.",
+      network: true
+    });
+  } finally {
+    // Always re-enable the button, even if something failed
+    clearTimeout(timeoutId);
+    btn.disabled = false;
+    btn.innerText = "Verify the Details";
+    responseArea.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+// =====================================================
+// NEXT STEP INFO
+// =====================================================
+
+function showNextMessage() {
   document.getElementById("nextMessage").innerHTML = `
-  
     <div class="next-message" style="text-align:left; line-height:1.9;">
 
       <h3 style="text-align:center;">
@@ -486,16 +798,9 @@ fetch("https://ipapi.co/json/")
       </p>
 
       <ol>
+        <li>First, the institution needs to request API access from the ABC/APAAR Team.</li>
 
-        <li>
-          First, the institution needs to request API access from the ABC/APAAR Team.
-        </li>
-
-        <li>
-          After approval, the institution receives:
-          <b>Customer ID</b> and
-          <b>Customer Secret Key</b>.
-        </li>
+        <li>After approval, the institution receives: <b>Customer ID</b> and <b>Customer Secret Key</b>.</li>
 
         <li>
           Using these credentials, the institution can generate:
@@ -506,46 +811,20 @@ fetch("https://ipapi.co/json/")
           through the Token API service.
         </li>
 
-        <li>
-          Once the token and encryption key are generated,
-          the institution can access the
-          <b>Verify APAAR ID API</b>.
-        </li>
+        <li>Once the token and encryption key are generated, the institution can access the <b>Verify APAAR ID API</b>.</li>
+
+        <li>The institution sends candidate information such as ABC/APAAR ID, candidate name, year of birth and gender along with candidate consent details.</li>
+
+        <li>If the consent is provided by <b>SELF</b>, the same candidate information can be reused as provider details automatically.</li>
+
+        <li>If consent is provided by <b>Guardian / Other</b>, then separate provider information must be collected, including provider name, authentication mode, authentication ID number and consent details.</li>
+
+        <li>Before sending the verification request, the complete payload must be encrypted using the encryption key received from the Token API.</li>
+
+        <li>The encrypted payload is then submitted securely to the Verify APAAR API using the generated authorization token.</li>
 
         <li>
-          The institution sends candidate information such as:
-          ABC/APAAR ID, candidate name, year of birth and gender
-          along with candidate consent details.
-        </li>
-
-        <li>
-          If the consent is provided by <b>SELF</b>,
-          the same candidate information can be reused
-          as provider details automatically.
-        </li>
-
-        <li>
-          If consent is provided by <b>Guardian / Other</b>,
-          then separate provider information must be collected,
-          including provider name, authentication mode,
-          authentication ID number and consent details.
-        </li>
-
-        <li>
-          Before sending the verification request,
-          the complete payload must be encrypted using
-          the encryption key received from the Token API.
-        </li>
-
-        <li>
-          The encrypted payload is then submitted securely
-          to the Verify APAAR API using the generated
-          authorization token.
-        </li>
-
-        <li>
-          The API response returns verified APAAR-linked
-          candidate information such as:
+          The API response returns verified APAAR-linked candidate information such as:
           <ul>
             <li>ABC Account ID</li>
             <li>Candidate Name</li>
@@ -555,26 +834,12 @@ fetch("https://ipapi.co/json/")
           </ul>
         </li>
 
-        <li>
-          Institutions can use the verified response
-          for candidate authentication, validation,
-          student onboarding, or to display
-          pre-filled registration forms within
-          their admission systems.
-        </li>
+        <li>Institutions can use the verified response for candidate authentication, validation, student onboarding, or to display pre-filled registration forms within their admission systems.</li>
 
-        <li>
-          This integration helps institutions reduce
-          manual data entry, improve data accuracy,
-          simplify verification workflows,
-          and ensure trusted student identity validation.
-        </li>
-
+        <li>This integration helps institutions reduce manual data entry, improve data accuracy, simplify verification workflows, and ensure trusted student identity validation.</li>
       </ol>
 
-      <p>
-        This workflow can be integrated with:
-      </p>
+      <p>This workflow can be integrated with:</p>
 
       <ul>
         <li>University Admission Systems</li>
@@ -585,36 +850,8 @@ fetch("https://ipapi.co/json/")
       </ul>
 
     </div>
-
   `;
 }
-  // =========================
-// AUTO DETECT LOCATION
-// =========================
-
-fetch("https://ipapi.co/json/")
-.then(response => response.json())
-.then(data => {
-
-  let cleanPlace = "India";
-
-  if (data.city) {
-
-    cleanPlace =
-      data.city.replace(/[^a-zA-Z\s]/g, "");
-
-  }
-
-  document.getElementById("place").value =
-    cleanPlace;
-
-})
-.catch(() => {
-
-  document.getElementById("place").value =
-    "India";
-
-});
 </script>
 
 </body>
