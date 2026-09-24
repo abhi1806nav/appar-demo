@@ -432,6 +432,141 @@
       text-align: center;
     }
 
+
+    /* ---------- Compare lists (matches / mismatches) ---------- */
+    .compare-list {
+      list-style: none;
+      background: #fff;
+      border: 1px solid #f0c2c2;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 12px 0;
+      color: #333;
+    }
+
+    .compare-list li {
+      margin: 6px 0;
+    }
+
+    .section-title {
+      margin: 22px 0 0;
+      font-size: 16px;
+      text-align: left;
+      color: #333;
+    }
+
+    .id-meta {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* ---------- Demo panel (bottom-right corner) ---------- */
+    .demo-fab {
+      position: fixed;
+      right: 18px;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      z-index: 50;
+      width: auto;
+      margin: 0;
+      padding: 10px 16px;
+      font-size: 14px;
+      background: #333;
+      color: #fff;
+      border-radius: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    }
+
+    .demo-fab.on {
+      background: #f2c230;
+      color: #3d3000;
+    }
+
+    .demo-panel {
+      position: fixed;
+      right: 18px;
+      bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+      z-index: 50;
+      width: 300px;
+      max-width: calc(100% - 36px);
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      box-sizing: border-box;
+      padding: 16px;
+      background: #fffdf3;
+      border: 1px solid #c9a227;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+      font-size: 14px;
+    }
+
+    .demo-panel h4 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .demo-panel .demo-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 6px;
+      cursor: pointer;
+    }
+
+    .demo-panel .demo-switch input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
+
+    .demo-note {
+      font-size: 12px;
+      color: #6b5a12;
+      margin-bottom: 10px;
+    }
+
+    .sample-group-title {
+      font-weight: bold;
+      margin: 12px 0 6px;
+      color: #444;
+    }
+
+    .demo-panel .sample-btn {
+      display: block;
+      width: 100%;
+      margin: 0 0 6px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: bold;
+      text-align: left;
+      background: #fff;
+      color: #5c4700;
+      border: 1px solid #d9bb55;
+      border-radius: 6px;
+    }
+
+    .demo-panel .sample-btn:hover {
+      background: #fff3c4;
+    }
+
+    .demo-tag {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #6b5a12;
+      background: #fff3c4;
+      border: 1px solid #c9a227;
+      border-radius: 20px;
+    }
+
+    .demo-tag + .result-card,
+    .demo-tag + .error-card {
+      margin-top: 8px;
+    }
+
     @media(max-width: 700px) {
       .grid { grid-template-columns: 1fr; }
       .card { padding: 20px; }
@@ -442,7 +577,7 @@
 <body>
 
 <div class="card">
-  <h1>Abhinav Demo Institution Uni</h1>
+  <h1>Abhinav XYZ Institution Uni</h1>
   <h2>ABC/APAAR ID Verification Mechanism Developed by Abhinav</h2>
   <h3>For Candidate Registration</h3>
 
@@ -548,19 +683,22 @@
   <form id="createForm" hidden>
 
     <p class="mode-intro">
-      Enter your details exactly as printed on your Aadhaar card to get your ABC/APAAR ID.
+      Enter the candidate's details exactly as printed on the Aadhaar card.
+      If an APAAR ID already exists, the same ID will be shown.
     </p>
 
-    <div class="grid">
+    <h3 class="section-title">Candidate Details (as per Aadhaar)</h3>
+
+    <div class="grid" style="margin-top:12px;">
       <div>
         <label>Name as per Aadhaar *</label>
-        <input id="c_name" autocomplete="name" required>
+        <input id="c_name" maxlength="100" autocomplete="name" required>
       </div>
 
       <div>
         <label>Aadhaar Number *</label>
         <input id="c_aadhaar" maxlength="12" inputmode="numeric" autocomplete="off" required>
-        <div class="hint">12 digits. Your full Aadhaar number is not stored.</div>
+        <div class="hint">12 digits. The full Aadhaar number is not stored.</div>
       </div>
 
       <div>
@@ -582,18 +720,73 @@
       <div>
         <label>Mobile Number *</label>
         <input id="c_mobile" maxlength="10" inputmode="numeric" autocomplete="tel-national" required>
-        <div class="hint">10 digit mobile number.</div>
+        <div class="hint">Mobile number linked to Aadhaar.</div>
       </div>
     </div>
 
     <div class="consent-box">
-      <div class="consent-line" style="margin-top:0;">
+      <h3 class="section-title" style="margin-top:0;">Consent Provider Details</h3>
+
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label>Consent Provided By *</label>
+          <select id="c_relation" required>
+            <option value="">Select</option>
+            <option value="SELF">Self</option>
+            <option value="FATHER">Father</option>
+            <option value="MOTHER">Mother</option>
+            <option value="GUARDIAN">Guardian</option>
+            <option value="TEACHER">Teacher</option>
+            <option value="FACULTY">Faculty</option>
+            <option value="OPERATOR">Operator</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Consent Provider Name *</label>
+          <input id="c_provider_name" required>
+          <div class="hint">Letters, single spaces and apostrophes only.</div>
+        </div>
+
+        <div>
+          <label>Provider Authentication Mode *</label>
+          <select id="c_auth_mode" required>
+            <option value="UID">UID (Aadhaar)</option>
+            <option value="PAN">PAN</option>
+            <option value="EPIC">EPIC (Voter ID)</option>
+            <option value="DL">Driving Licence</option>
+            <option value="PASSPORT">Passport</option>
+            <option value="TEACHER">Teacher ID</option>
+            <option value="FACULTY">Faculty ID</option>
+            <option value="OPERATOR ID (SCHOOL ID)">Operator ID (School ID)</option>
+            <option value="SELF">Self</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Provider Authentication ID No *</label>
+          <input id="c_auth_id" autocomplete="off" required>
+          <div class="hint">Letters, numbers and brackets only, e.g. OPERATOR123(SCH01).</div>
+        </div>
+
+        <div>
+          <label>Consent Place *</label>
+          <input id="c_place" placeholder="Detecting location..." required>
+        </div>
+
+        <div>
+          <label>Consent Date &amp; Time</label>
+          <input id="c_consent_datetime" readonly>
+        </div>
+      </div>
+
+      <div class="consent-line">
         <input type="checkbox" id="c_consent" required>
-        <span>I consent to the use of my Aadhaar details to create or retrieve my ABC/APAAR ID.</span>
+        <span>I confirm consent to use the candidate's Aadhaar details to create or retrieve the ABC/APAAR ID.</span>
       </div>
     </div>
 
-    <button id="createBtn" type="submit">Get my APAAR ID</button>
+    <button id="createBtn" type="submit">Get APAAR ID</button>
 
     <button type="button" class="link-btn" data-switch="verify" style="display:block; margin:14px auto 0;">
       Already have APAAR ID? Verify it
@@ -602,6 +795,35 @@
 
   <div id="trackerArea"></div>
   <div id="responseArea"></div>
+</div>
+
+<!-- ================= DEMO PANEL (bottom-right corner) ================= -->
+<button type="button" class="demo-fab" id="demoFab" aria-expanded="false" aria-controls="demoPanel">&#129514; Demo</button>
+
+<div class="demo-panel" id="demoPanel" hidden>
+  <h4>Demo mode</h4>
+
+  <label class="demo-switch">
+    <input type="checkbox" id="demoMode">
+    Use sample data (no real API call)
+  </label>
+  <div class="demo-note">Responses are simulated. Encryption still runs for real.</div>
+
+  <div id="samplesVerify" data-demo-only hidden>
+    <div class="sample-group-title">Verify APAAR ID</div>
+    <button type="button" class="sample-btn" data-sample="verify_ok">&#10004; Correct details</button>
+    <button type="button" class="sample-btn" data-sample="verify_wrong_year">&#10008; Wrong year of birth</button>
+    <button type="button" class="sample-btn" data-sample="verify_not_found">&#10008; APAAR ID not found</button>
+  </div>
+
+  <div id="samplesCreate" data-demo-only hidden>
+    <div class="sample-group-title">Get APAAR ID with Aadhaar</div>
+    <button type="button" class="sample-btn" data-sample="create_new">&#10004; New APAAR ID created</button>
+    <button type="button" class="sample-btn" data-sample="create_exists">&#10004; APAAR ID already exists</button>
+    <button type="button" class="sample-btn" data-sample="create_wrong_name">&#10008; Name mismatch</button>
+    <button type="button" class="sample-btn" data-sample="create_underage">&#10008; Under 18 (school student)</button>
+    <button type="button" class="sample-btn" data-sample="create_unknown">&#10008; Aadhaar details do not match</button>
+  </div>
 </div>
 
 <script>
@@ -623,7 +845,7 @@ for (let y = new Date().getFullYear(); y >= 1950; y--) {
 // Date of birth cannot be in the future
 document.getElementById("c_dob").max = new Date().toISOString().split("T")[0];
 
-// Consent date/time (updates every second)
+// Consent date/time for both forms (updates every second)
 function setDateTime() {
   const now = new Date();
 
@@ -639,26 +861,32 @@ function setDateTime() {
 
   document.getElementById("consent_date").value = date;
   document.getElementById("consent_time").value = time;
+  document.getElementById("c_consent_datetime").value = date + " " + time;
 }
 
 setDateTime();
 setInterval(setDateTime, 1000);
 
-// Location auto-fill (only alphabets and spaces allowed)
+// Location auto-fill for both forms (only letters and spaces kept)
+function setPlace(value) {
+  document.getElementById("place").value = value;
+  if (!document.getElementById("c_place").value) {
+    document.getElementById("c_place").value = value;
+  }
+}
+
 fetch("https://ipapi.co/json/")
   .then(response => response.json())
   .then(data => {
     let cleanPlace = "India";
 
     if (data.city) {
-      cleanPlace = data.city.replace(/[^a-zA-Z\s]/g, "").trim();
+      cleanPlace = data.city.replace(/[^a-zA-Z\s]/g, "").replace(/\s+/g, " ").trim();
     }
 
-    document.getElementById("place").value = cleanPlace || "India";
+    setPlace(cleanPlace || "India");
   })
-  .catch(() => {
-    document.getElementById("place").value = "India";
-  });
+  .catch(() => setPlace("India"));
 
 // When consent is SELF, copy candidate details into provider details
 function autoFillSelf() {
@@ -685,6 +913,11 @@ digitsOnly("c_aadhaar", 12);
 digitsOnly("c_mobile", 10);
 
 document.getElementById("apaar_id").addEventListener("input", autoFillSelf);
+
+// Provider ID: letters, numbers and brackets only
+document.getElementById("c_auth_id").addEventListener("input", function() {
+  this.value = this.value.replace(/[^A-Za-z0-9()]/g, "").toUpperCase();
+});
 
 document.querySelectorAll("input[name='consent_relation']").forEach(radio => {
   radio.addEventListener("change", function() {
@@ -824,7 +1057,11 @@ const FIELD_LABELS = {
   aadhaar_number: "Aadhaar Number",
   dob: "Date of Birth",
   mobile: "Mobile Number",
-  ai_nad_id: "Institution NAD ID"
+  ai_nad_id: "Institution NAD ID",
+  consent_relation: "Consent Provided By",
+  provider_name: "Consent Provider Name",
+  authentication_mode: "Provider Authentication Mode",
+  authentication_id_no: "Provider Authentication ID No"
 };
 
 // Which form input to highlight for each API field, per mode
@@ -845,7 +1082,12 @@ const FIELD_TO_INPUT = {
     dob: "c_dob",
     gender: "c_gender",
     mobile: "c_mobile",
-    consent: "c_consent"
+    consent: "c_consent",
+    consent_relation: "c_relation",
+    provider_name: "c_provider_name",
+    authentication_mode: "c_auth_mode",
+    authentication_id_no: "c_auth_id",
+    consent_place: "c_place"
   }
 };
 
@@ -875,6 +1117,21 @@ function getErrorHint(err) {
 
   if (err.match_data_status) {
     return "Please enter Name, Year of Birth and Gender exactly as per Aadhaar, then try again.";
+  }
+  if (err.mismatches) {
+    return "Correct the fields marked with a cross so they match the Aadhaar card exactly.";
+  }
+  if (msg.includes("not whitelisted")) {
+    return "The server's IP address must be whitelisted by the APAAR team before this API can be used.";
+  }
+  if (msg.includes("school students")) {
+    return "Candidates under 18 should get their APAAR ID through their school.";
+  }
+  if (msg.includes("ekyc")) {
+    return "The candidate should update their eKYC in DigiLocker and then try again.";
+  }
+  if (msg.includes("consent date")) {
+    return "Consent must be given within the last 30 days. Please submit again.";
   }
   if (msg.includes("aadhaar details")) {
     return "Enter name, Aadhaar number, date of birth and gender exactly as printed on the Aadhaar card.";
@@ -912,7 +1169,7 @@ function buildValidationList(errors) {
   return items ? `<ul class="error-list">${items}</ul>` : "";
 }
 
-// Build the match table for "Input details does not match" (E-321)
+// Build the match table for the Verify API (E-321)
 function buildMatchTable(matchData) {
   if (!matchData || typeof matchData !== "object") return "";
 
@@ -951,6 +1208,29 @@ function buildMatchTable(matchData) {
   return html;
 }
 
+// Build the matches / mismatches list for the Create API ("Data comparison completed")
+function buildCompareList(matches, mismatches) {
+  if (!Array.isArray(matches) && !Array.isArray(mismatches)) return "";
+
+  let items = "";
+
+  (matches || []).forEach(text => {
+    items += `<li><span class="match-ok">&#10004;</span> ${escapeHtml(text)}</li>`;
+  });
+
+  (mismatches || []).forEach(text => {
+    items += `<li><span class="match-bad">&#10008;</span> ${escapeHtml(text)}</li>`;
+
+    // Highlight the field the mismatch is about
+    const lower = String(text).toLowerCase();
+    if (lower.startsWith("name")) highlightInput("aadhaar_name");
+    if (lower.startsWith("dob")) highlightInput("dob");
+    if (lower.startsWith("gender")) highlightInput("gender");
+  });
+
+  return items ? `<ul class="compare-list">${items}</ul>` : "";
+}
+
 // Main error renderer: works for every fail response format
 function renderError(rawError, title) {
   // API can send an object, an array with one object, or plain text
@@ -979,6 +1259,7 @@ function renderError(rawError, title) {
 
       ${buildValidationList(err.errors)}
       ${buildMatchTable(err.match_data_status)}
+      ${buildCompareList(err.matches, err.mismatches)}
 
       ${metaParts.length ? `<div class="meta">${metaParts.join(" | ")}</div>` : ""}
 
@@ -988,6 +1269,110 @@ function renderError(rawError, title) {
       </details>
     </div>
   `;
+}
+
+// =====================================================
+// DEMO MODE (panel in the bottom-right corner)
+// =====================================================
+
+// Dummy data. Must match DEMO_STUDENTS in server.js.
+// 999941057058 is UIDAI's published test Aadhaar number.
+const DEMO_PROVIDER = {
+  relation: "FATHER",
+  provider_name: "Rakesh Sharma",
+  auth_mode: "PAN",
+  auth_id: "ABCPS1234K"
+};
+
+const SAMPLES = {
+  verify_ok:         { mode: "verify", apaar_id: "432198765012", name: "Abhinav Sharma", year: "1993", gender: "M" },
+  verify_wrong_year: { mode: "verify", apaar_id: "432198765012", name: "Abhinav Sharma", year: "1995", gender: "M" },
+  verify_not_found:  { mode: "verify", apaar_id: "432198765099", name: "Abhinav Sharma", year: "1993", gender: "M" },
+
+  create_new:        { mode: "create", name: "Abhinav Sharma", aadhaar: "999941057058", dob: "1993-06-18", gender: "M", mobile: "9876543210" },
+  create_exists:     { mode: "create", name: "Abhinav Sharma", aadhaar: "999900001119", dob: "1993-06-18", gender: "M", mobile: "9876543210" },
+  create_wrong_name: { mode: "create", name: "Abhinav Kumar Sharma", aadhaar: "999941057058", dob: "1993-06-18", gender: "M", mobile: "9876543210" },
+  create_underage:   { mode: "create", name: "Abhinav Sharma", aadhaar: "999941057058", dob: "2012-06-18", gender: "M", mobile: "9876543210" },
+  create_unknown:    { mode: "create", name: "Abhinav Sharma", aadhaar: "999900002229", dob: "1993-06-18", gender: "M", mobile: "9876543210" }
+};
+
+function isDemo() {
+  return document.getElementById("demoMode").checked;
+}
+
+function fillSample(key) {
+  const sample = SAMPLES[key];
+  if (!sample) return;
+
+  if (currentMode !== sample.mode) {
+    switchMode(sample.mode);
+  } else {
+    clearHighlights();
+    document.getElementById("trackerArea").innerHTML = "";
+    document.getElementById("responseArea").innerHTML = "";
+  }
+
+  if (sample.mode === "verify") {
+    document.getElementById("apaar_id").value = sample.apaar_id;
+    document.getElementById("name").value = sample.name;
+    document.getElementById("year_of_birth").value = sample.year;
+    document.getElementById("gender").value = sample.gender;
+    document.querySelector("input[name='consent_relation'][value='Self']").checked = true;
+    document.getElementById("providerDetails").open = false;
+    document.getElementById("consent_check").checked = true;
+    autoFillSelf();
+  } else {
+    document.getElementById("c_name").value = sample.name;
+    document.getElementById("c_aadhaar").value = sample.aadhaar;
+    document.getElementById("c_dob").value = sample.dob;
+    document.getElementById("c_gender").value = sample.gender;
+    document.getElementById("c_mobile").value = sample.mobile;
+    document.getElementById("c_relation").value = DEMO_PROVIDER.relation;
+    document.getElementById("c_provider_name").value = DEMO_PROVIDER.provider_name;
+    document.getElementById("c_auth_mode").value = DEMO_PROVIDER.auth_mode;
+    document.getElementById("c_auth_id").value = DEMO_PROVIDER.auth_id;
+    if (!document.getElementById("c_place").value) {
+      document.getElementById("c_place").value = "New Delhi";
+    }
+    document.getElementById("c_consent").checked = true;
+  }
+
+  document.querySelector(".tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.querySelectorAll("[data-sample]").forEach(btn => {
+  btn.addEventListener("click", () => fillSample(btn.dataset.sample));
+});
+
+// Open / close the demo panel
+const demoFab = document.getElementById("demoFab");
+const demoPanel = document.getElementById("demoPanel");
+
+demoFab.addEventListener("click", () => {
+  demoPanel.hidden = !demoPanel.hidden;
+  demoFab.setAttribute("aria-expanded", demoPanel.hidden ? "false" : "true");
+});
+
+// Show or hide the sample buttons when demo mode is switched
+document.getElementById("demoMode").addEventListener("change", () => {
+  const on = isDemo();
+
+  document.querySelectorAll("[data-demo-only]").forEach(el => {
+    el.hidden = !on;
+  });
+
+  demoFab.classList.toggle("on", on);
+  demoFab.innerHTML = on ? "&#129514; Demo ON" : "&#129514; Demo";
+
+  document.getElementById("trackerArea").innerHTML = "";
+  document.getElementById("responseArea").innerHTML = "";
+  clearHighlights();
+});
+
+// Put a result on screen, with a "demo" label when it is simulated
+function showResult(html, demo) {
+  const tag = demo ? '<div class="demo-tag">Demo response (simulated)</div>' : "";
+  document.getElementById("responseArea").innerHTML = tag + html;
 }
 
 // =====================================================
@@ -1007,7 +1392,8 @@ const CREATE_STEPS = [
   { id: "connect", label: "Connecting to server" },
   { id: "check",   label: "Checking entered details" },
   { id: "token",   label: "Generating access token" },
-  { id: "create",  label: "Sending Aadhaar details to APAAR API" },
+  { id: "encrypt", label: "Encrypting Aadhaar details with AES-256-GCM" },
+  { id: "create",  label: "Sending encrypted data to APAAR API" },
   { id: "result",  label: "Reading APAAR ID from response" }
 ];
 
@@ -1025,7 +1411,8 @@ function formatMs(ms) {
 function renderTracker(steps, title) {
   activeSteps = steps;
 
-  let html = `<div class="tracker"><h3>${escapeHtml(title)}</h3>`;
+  const fullTitle = isDemo() ? title + " (demo)" : title;
+  let html = `<div class="tracker"><h3>${escapeHtml(fullTitle)}</h3>`;
 
   steps.forEach(step => {
     html += `
@@ -1262,18 +1649,18 @@ document.getElementById("verifyForm").addEventListener("submit", async function(
   e.preventDefault();
 
   const apaarId = document.getElementById("apaar_id").value;
-  const responseArea = document.getElementById("responseArea");
 
   clearHighlights();
 
   if (!/^[0-9]{12}$/.test(apaarId)) {
     document.getElementById("apaar_id").classList.add("input-error");
     document.getElementById("trackerArea").innerHTML = "";
-    responseArea.innerHTML = renderError({ message: "ABC/APAAR ID must be exactly 12 digits." });
+    showResult(renderError({ message: "ABC/APAAR ID must be exactly 12 digits." }), false);
     return;
   }
 
   const payload = {
+    demo: isDemo(),
     apaar_id: apaarId,
     name: document.getElementById("name").value.trim(),
     year_of_birth: document.getElementById("year_of_birth").value,
@@ -1299,34 +1686,44 @@ document.getElementById("verifyForm").addEventListener("submit", async function(
   const apiData = Array.isArray(data.response) ? data.response[0] : data.response;
 
   if (data.success && apiData && apiData.status === "success") {
-    responseArea.innerHTML = renderVerifySuccess(apiData);
+    showResult(renderVerifySuccess(apiData), data.demo);
   } else {
-    responseArea.innerHTML = renderError(data.error || data.response || data, "Verification Failed");
+    showResult(renderError(data.error || data.response || data, "Verification Failed"), data.demo);
   }
 });
 
 // =====================================================
-// MODE 2: CREATE / GET APAAR ID USING AADHAAR
+// MODE 2: CREATE / GET APAAR ID USING AADHAAR (API v2)
 // =====================================================
 
-// Details of the last created ID, used by "Verify this APAAR ID now"
+// Details of the last received ID, used by "Verify this APAAR ID now"
 let lastCreated = null;
 
 function renderCreateSuccess(apiData) {
+  const alreadyExists = String(apiData.message || "").toLowerCase().includes("already");
+  const heading = alreadyExists ? "APAAR ID already exists" : "APAAR ID created successfully";
+
+  const meta = [];
+  if (apiData.txn_id) meta.push("Txn ID: " + escapeHtml(apiData.txn_id));
+  if (apiData.date_time) meta.push("Time: " + escapeHtml(apiData.date_time));
+
   return `
     <div class="result-card">
-      <h3>${escapeHtml(apiData.message || "ABC ID created successfully")}</h3>
+      <h3>${escapeHtml(heading)}</h3>
 
-      <p class="center" style="margin:10px 0 0;">Your ABC/APAAR ID</p>
-      <div class="big-id">${escapeHtml(groupDigits(apiData.ABC_ACCOUNT_ID))}</div>
+      <p class="center" style="margin:10px 0 0;">
+        ${alreadyExists ? "This candidate already has an ABC/APAAR ID" : "Your new ABC/APAAR ID"}
+      </p>
+      <div class="big-id">${escapeHtml(groupDigits(lastCreated.apaarId))}</div>
       <p class="center hint">Candidate: ${escapeHtml(lastCreated.name)}</p>
+      ${meta.length ? `<div class="id-meta">${meta.join(" | ")}</div>` : ""}
 
       <button type="button" onclick="useCreatedId()">Verify this APAAR ID now</button>
     </div>
   `;
 }
 
-// Switch to Verify mode with the new APAAR ID and details already filled in
+// Switch to Verify mode with the APAAR ID and details already filled in
 function useCreatedId() {
   if (!lastCreated) return;
 
@@ -1336,6 +1733,8 @@ function useCreatedId() {
   document.getElementById("name").value = lastCreated.name;
   document.getElementById("year_of_birth").value = lastCreated.year;
   document.getElementById("gender").value = lastCreated.gender;
+  document.querySelector("input[name='consent_relation'][value='Self']").checked = true;
+  document.getElementById("providerDetails").open = false;
   autoFillSelf();
 
   const btn = document.getElementById("verifyBtn");
@@ -1346,45 +1745,60 @@ function useCreatedId() {
 document.getElementById("createForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const responseArea = document.getElementById("responseArea");
   clearHighlights();
 
-  const name = document.getElementById("c_name").value.trim();
+  const name = document.getElementById("c_name").value.trim().replace(/\s+/g, " ");
   const aadhaar = document.getElementById("c_aadhaar").value;
   const dobInput = document.getElementById("c_dob").value;
   const gender = document.getElementById("c_gender").value;
   const mobile = document.getElementById("c_mobile").value;
+  const relation = document.getElementById("c_relation").value;
+  const providerName = document.getElementById("c_provider_name").value.trim().replace(/\s+/g, " ");
+  const authMode = document.getElementById("c_auth_mode").value;
+  const authId = document.getElementById("c_auth_id").value.trim();
+  const place = document.getElementById("c_place").value.trim();
   const consent = document.getElementById("c_consent").checked;
 
   // Quick checks in the browser before calling the server
   const errors = {};
   if (!isValidAadhaar(aadhaar)) errors.aadhaar_number = ["Please enter a valid 12 digit Aadhaar number."];
-  if (!/^[6-9][0-9]{9}$/.test(mobile)) errors.mobile = ["Mobile number must be 10 digits and start with 6, 7, 8 or 9."];
+  if (!/^[0-9]{10}$/.test(mobile)) errors.mobile = ["Mobile number must be exactly 10 digits."];
+  if (!relation) errors.consent_relation = ["Please select who is giving the consent."];
+  if (!/^[A-Za-z']+( [A-Za-z']+)*$/.test(providerName)) {
+    errors.provider_name = ["Only letters, single spaces and apostrophes are allowed."];
+  }
+  if (!/^[A-Za-z0-9()]+$/.test(authId)) {
+    errors.authentication_id_no = ["Only letters, numbers and brackets are allowed."];
+  }
   if (!consent) errors.consent = ["Please give consent to continue."];
 
   if (Object.keys(errors).length) {
     document.getElementById("trackerArea").innerHTML = "";
-    responseArea.innerHTML = renderError(
+    showResult(renderError(
       { status: "fail", message: "Please correct the details.", errors },
       "Could not get APAAR ID"
-    );
+    ), false);
     return;
   }
-
-  const dob = convertDateInputToDob(dobInput);
 
   const data = await runWithTracker({
     url: "/create-apaar",
     payload: {
+      demo: isDemo(),
       aadhaar_name: name,
       aadhaar_number: aadhaar,
-      dob,
+      dob: convertDateInputToDob(dobInput),
       gender,
       mobile,
+      consent_relation: relation,
+      provider_name: providerName,
+      authentication_mode: authMode,
+      authentication_id_no: authId,
+      consent_place: place,
       consent
     },
     steps: CREATE_STEPS,
-    title: "Getting your APAAR ID",
+    title: "Getting APAAR ID",
     button: document.getElementById("createBtn"),
     busyText: "Please wait..."
   });
@@ -1393,14 +1807,14 @@ document.getElementById("createForm").addEventListener("submit", async function(
 
   if (data.success && apiData && apiData.status === "success") {
     lastCreated = {
-      apaarId: String(apiData.ABC_ACCOUNT_ID || ""),
+      apaarId: String(apiData.apaar_id || apiData.ABC_ACCOUNT_ID || ""),
       name,
       year: dobInput.split("-")[0],
       gender
     };
-    responseArea.innerHTML = renderCreateSuccess(apiData);
+    showResult(renderCreateSuccess(apiData), data.demo);
   } else {
-    responseArea.innerHTML = renderError(data.error || data.response || data, "Could not get APAAR ID");
+    showResult(renderError(data.error || data.response || data, "Could not get APAAR ID"), data.demo);
   }
 });
 
