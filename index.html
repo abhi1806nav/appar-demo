@@ -384,6 +384,10 @@
       border-radius: 6px;
     }
 
+    @media (max-width: 700px) {
+      .tabs { flex-direction: column; }
+    }
+
     .tabs .tab.active {
       background: #c7352c;
       color: #fff;
@@ -460,6 +464,76 @@
       font-size: 13px;
       color: #555;
       margin-top: 4px;
+    }
+
+    /* ---------- Upload tab ---------- */
+    .job-card {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f5faff;
+      border: 1px solid #9cc3e6;
+      border-radius: 8px;
+    }
+
+    .job-card h3 {
+      margin-top: 0;
+    }
+
+    .job-card table td {
+      background: #fff;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .badge-wait { background: #fff3c4; color: #6b5a12; }
+    .badge-info { background: #dcebfb; color: #064b7a; }
+    .badge-ok   { background: #d9f2df; color: #145c2a; }
+    .badge-bad  { background: #fbdcdc; color: #900; }
+
+    button.secondary-btn {
+      width: auto;
+      margin-top: 12px;
+      padding: 8px 14px;
+      font-size: 14px;
+      background: #fff;
+      color: #064b7a;
+      border: 1px solid #7ab8e8;
+    }
+
+    button.secondary-btn:hover {
+      background: #eef7ff;
+    }
+
+    button.copy-btn {
+      width: auto;
+      margin: 0 0 0 8px;
+      padding: 2px 8px;
+      font-size: 12px;
+      background: #fff;
+      color: #064b7a;
+      border: 1px solid #7ab8e8;
+      vertical-align: middle;
+    }
+
+    button:disabled.secondary-btn,
+    button[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      overflow-wrap: anywhere;
+    }
+
+    #realOnly[hidden] {
+      display: none;
     }
 
     /* ---------- Demo panel (bottom-right corner) ---------- */
@@ -584,6 +658,7 @@
   <div class="tabs" role="tablist">
     <button type="button" class="tab active" data-mode="verify" role="tab" aria-selected="true">I have APAAR ID</button>
     <button type="button" class="tab" data-mode="create" role="tab" aria-selected="false">Don't have / forgot APAAR ID</button>
+    <button type="button" class="tab" data-mode="upload" role="tab" aria-selected="false">Upload Academic Data</button>
   </div>
 
   <!-- ================= MODE 1: VERIFY ================= -->
@@ -732,13 +807,13 @@
           <label>Consent Provided By *</label>
           <select id="c_relation" required>
             <option value="">Select</option>
-            <option value="SELF">Self</option>
             <option value="FATHER">Father</option>
             <option value="MOTHER">Mother</option>
             <option value="GUARDIAN">Guardian</option>
             <option value="TEACHER">Teacher</option>
             <option value="FACULTY">Faculty</option>
             <option value="OPERATOR">Operator</option>
+            <option value="SELF">Self</option>
           </select>
         </div>
 
@@ -793,6 +868,75 @@
     </button>
   </form>
 
+  <!-- ================= MODE 3: UPLOAD ACADEMIC DATA ================= -->
+  <form id="uploadForm" hidden>
+
+    <p class="mode-intro">
+      For institutions: upload the academic data zip file, track its processing and verify the records.
+    </p>
+
+    <h3 class="section-title">Step 1: Upload file</h3>
+
+    <div class="grid" style="margin-top:12px;">
+      <div>
+        <label>Year of Exam *</label>
+        <select id="u_year" required></select>
+      </div>
+
+      <div>
+        <label>Document Type *</label>
+        <input id="u_doc_type" list="docTypeList" placeholder="e.g. DGMST" autocomplete="off" required>
+        <datalist id="docTypeList">
+          <option value="DGMST"></option>
+          <option value="DGCER"></option>
+        </datalist>
+        <div class="hint">E.g. DGMST, DGCER.</div>
+      </div>
+
+      <div>
+        <label>Institution Type *</label>
+        <select id="u_inst" required>
+          <option value="">Select</option>
+          <option value="University">University</option>
+          <option value="Board">Board</option>
+          <option value="College">College</option>
+          <option value="Autonomous College">Autonomous College</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Data File (.zip) *</label>
+        <input id="u_file" type="file" accept=".zip,application/zip">
+        <div class="hint" id="u_file_hint">Zip file containing the CSV data. Max 25 MB.</div>
+      </div>
+
+      <div id="realOnly">
+        <label>Admin PIN *</label>
+        <input id="u_pin" type="password" autocomplete="off">
+        <div class="hint">Required for real uploads. Not needed in Demo mode.</div>
+      </div>
+    </div>
+
+    <button id="uploadBtn" type="submit">Upload File</button>
+
+    <details style="margin-top:18px;">
+      <summary>Already uploaded? Check status with a tracking ID</summary>
+      <div class="grid">
+        <div>
+          <label>Tracking ID</label>
+          <input id="u_track_id" class="mono" autocomplete="off">
+        </div>
+        <div>
+          <label>Uploaded File Name</label>
+          <input id="u_track_file" placeholder="e.g. ResultData_2021.zip" autocomplete="off">
+          <div class="hint">Needed later for Record Verify. Year, document type and institution type are taken from above.</div>
+        </div>
+      </div>
+      <button type="button" class="secondary-btn" id="trackExistingBtn">Check status</button>
+    </details>
+  </form>
+
+  <div id="jobArea" hidden></div>
   <div id="trackerArea"></div>
   <div id="responseArea"></div>
 </div>
@@ -824,6 +968,14 @@
     <button type="button" class="sample-btn" data-sample="create_underage">&#10008; Under 18 (school student)</button>
     <button type="button" class="sample-btn" data-sample="create_unknown">&#10008; Aadhaar details do not match</button>
   </div>
+
+  <div id="samplesUpload" data-demo-only hidden>
+    <div class="sample-group-title">Upload Academic Data</div>
+    <button type="button" class="sample-btn" data-sample="upload_ok">&#10004; Upload sample file</button>
+    <button type="button" class="sample-btn" data-sample="upload_errors">&#10008; File with failed records</button>
+    <button type="button" class="sample-btn" data-sample="upload_token">&#8635; Token expired (auto-retry)</button>
+    <button type="button" class="sample-btn" data-sample="upload_wrong_name">&#10008; Record verify with wrong file name</button>
+  </div>
 </div>
 
 <script>
@@ -840,6 +992,16 @@ for (let y = new Date().getFullYear(); y >= 1950; y--) {
   opt.value = y;
   opt.textContent = y;
   yearSelect.appendChild(opt);
+}
+
+// Exam year dropdown for uploads
+const examYearSelect = document.getElementById("u_year");
+examYearSelect.innerHTML = '<option value="">Select Year</option>';
+for (let y = new Date().getFullYear(); y >= 2000; y--) {
+  const opt = document.createElement("option");
+  opt.value = y;
+  opt.textContent = y;
+  examYearSelect.appendChild(opt);
 }
 
 // Date of birth cannot be in the future
@@ -1000,6 +1162,8 @@ function switchMode(mode) {
 
   document.getElementById("verifyForm").hidden = mode !== "verify";
   document.getElementById("createForm").hidden = mode !== "create";
+  document.getElementById("uploadForm").hidden = mode !== "upload";
+  document.getElementById("jobArea").hidden = mode !== "upload" || !job;
 
   document.querySelectorAll(".tabs .tab").forEach(tab => {
     const active = tab.dataset.mode === mode;
@@ -1061,7 +1225,13 @@ const FIELD_LABELS = {
   consent_relation: "Consent Provided By",
   provider_name: "Consent Provider Name",
   authentication_mode: "Provider Authentication Mode",
-  authentication_id_no: "Provider Authentication ID No"
+  authentication_id_no: "Provider Authentication ID No",
+  year_of_exam: "Year of Exam",
+  doc_type: "Document Type",
+  institution_type: "Institution Type",
+  userfile: "File",
+  pin: "Admin PIN",
+  tracking_id: "Tracking ID"
 };
 
 // Which form input to highlight for each API field, per mode
@@ -1088,8 +1258,26 @@ const FIELD_TO_INPUT = {
     authentication_mode: "c_auth_mode",
     authentication_id_no: "c_auth_id",
     consent_place: "c_place"
+  },
+  upload: {
+    year_of_exam: "u_year",
+    doc_type: "u_doc_type",
+    institution_type: "u_inst",
+    userfile: "u_file",
+    pin: "u_pin",
+    tracking_id: "u_track_id"
+  },
+  process: {
+    year_of_exam: "j_year",
+    doc_type: "j_doc_type",
+    institution_type: "j_inst",
+    userfile: "j_file",
+    pin: "u_pin"
   }
 };
+
+// Which field map to use when highlighting (set to "process" for Record Verify errors)
+let highlightScope = null;
 
 function cleanKey(key) {
   return String(key).replace(/"/g, "").trim();
@@ -1100,9 +1288,10 @@ function fieldLabel(key) {
 }
 
 function highlightInput(apiKey) {
-  const inputId = FIELD_TO_INPUT[currentMode][cleanKey(apiKey)];
-  if (inputId) {
-    document.getElementById(inputId).classList.add("input-error");
+  const inputId = FIELD_TO_INPUT[highlightScope || currentMode][cleanKey(apiKey)];
+  const el = inputId && document.getElementById(inputId);
+  if (el) {
+    el.classList.add("input-error");
   }
 }
 
@@ -1117,6 +1306,22 @@ function getErrorHint(err) {
 
   if (err.match_data_status) {
     return "Please enter Name, Year of Birth and Gender exactly as per Aadhaar, then try again.";
+  }
+  if (msg.includes("token is expired") || String(err.status || "").toLowerCase().includes("token is expired")) {
+    return "The access token expired. Please try again; a new token will be generated.";
+  }
+  if (msg.includes("given data was invalid")) {
+    return "A field is missing or invalid. Check the year, document type, institution type and the zip file.";
+  }
+  if (msg.includes("file not found")) {
+    return "Year, document type, institution type and file name must exactly match the uploaded file.";
+  }
+  if (msg.includes("not ready for verification")) {
+    return "Wait until the file status shows \"pending for verification\".";
+  }
+  if (msg.includes("admin pin") || msg.includes("uploads are switched off") ||
+      (err.errors && err.errors.pin)) {
+    return "Real uploads need the admin PIN. Use Demo mode to try the flow without it.";
   }
   if (err.mismatches) {
     return "Correct the fields marked with a cross so they match the Aadhaar card exactly.";
@@ -1301,6 +1506,8 @@ function isDemo() {
 }
 
 function fillSample(key) {
+  if (key.startsWith("upload_")) return fillUploadSample(key);
+
   const sample = SAMPLES[key];
   if (!sample) return;
 
@@ -1363,6 +1570,15 @@ document.getElementById("demoMode").addEventListener("change", () => {
 
   demoFab.classList.toggle("on", on);
   demoFab.innerHTML = on ? "&#129514; Demo ON" : "&#129514; Demo";
+
+  // PIN is only needed for real uploads
+  document.getElementById("realOnly").hidden = on;
+
+  // A running upload belongs to one mode; start fresh when switching
+  resetJob();
+  demoSampleFile = null;
+  demoScenario = "";
+  updateFileHint();
 
   document.getElementById("trackerArea").innerHTML = "";
   document.getElementById("responseArea").innerHTML = "";
@@ -1512,10 +1728,11 @@ async function runWithTracker({ url, payload, steps, title, button, busyText }) 
   let finalData = null;
 
   try {
+    const isForm = payload instanceof FormData;
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      headers: isForm ? undefined : { "Content-Type": "application/json" },
+      body: isForm ? payload : JSON.stringify(payload),
       signal: controller.signal
     });
 
@@ -1817,6 +2034,429 @@ document.getElementById("createForm").addEventListener("submit", async function(
     showResult(renderError(data.error || data.response || data, "Could not get APAAR ID"), data.demo);
   }
 });
+
+// =====================================================
+// MODE 3: UPLOAD ACADEMIC DATA
+// Upload -> Track status (auto-refresh) -> Record Verify
+// =====================================================
+
+const UPLOAD_STEPS = [
+  { id: "connect", label: "Connecting to server" },
+  { id: "check",   label: "Checking file and details" },
+  { id: "token",   label: "Getting access token" },
+  { id: "upload",  label: "Uploading file to NAD" },
+  { id: "result",  label: "Reading tracking ID" }
+];
+
+const PROCESS_STEPS = [
+  { id: "connect", label: "Connecting to server" },
+  { id: "check",   label: "Checking details" },
+  { id: "token",   label: "Getting access token" },
+  { id: "process", label: "Sending record verify request to NAD" },
+  { id: "result",  label: "Reading verification result" }
+];
+
+const MAX_UPLOAD_MB = 25;
+
+let job = null;           // the file being tracked
+let pollTimer = null;
+let pollCount = 0;
+let demoSampleFile = null; // dummy zip created for demo samples
+let demoScenario = "";     // e.g. "token_expired"
+
+// ---------- Demo: build a tiny valid (empty) zip file in the browser ----------
+function makeSampleZip(name) {
+  const bytes = new Uint8Array(22);
+  bytes.set([0x50, 0x4b, 0x05, 0x06]); // "PK" end-of-archive record, rest zeros
+  return new File([bytes], name, { type: "application/zip" });
+}
+
+function updateFileHint() {
+  const input = document.getElementById("u_file");
+  const hint = document.getElementById("u_file_hint");
+  const chosen = input.files[0] || demoSampleFile;
+
+  hint.textContent = chosen
+    ? "Selected: " + chosen.name + (demoSampleFile && !input.files[0] ? " (demo sample)" : "")
+    : "Zip file containing the CSV data. Max " + MAX_UPLOAD_MB + " MB.";
+}
+
+document.getElementById("u_file").addEventListener("change", () => {
+  demoSampleFile = null; // a real file was chosen
+  updateFileHint();
+});
+
+function fillUploadSample(key) {
+  if (currentMode !== "upload") switchMode("upload");
+  clearHighlights();
+  document.getElementById("trackerArea").innerHTML = "";
+  document.getElementById("responseArea").innerHTML = "";
+
+  if (key === "upload_wrong_name") {
+    if (!job) {
+      showResult(renderError({ message: "Upload a sample file first, then use this sample." }, "Nothing to verify yet"), true);
+      return;
+    }
+    document.getElementById("j_file").value = "Wrong_File_Name.zip";
+    document.getElementById("processBtn").disabled = false;
+    document.getElementById("j_file").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  document.getElementById("u_year").value = "2021";
+  document.getElementById("u_doc_type").value = "DGMST";
+  document.getElementById("u_inst").value = "University";
+
+  const fileName = key === "upload_errors"
+    ? "ResultData_Sample_WithErrors_2021.zip"
+    : "ResultData_Sample_University_2021.zip";
+
+  document.getElementById("u_file").value = "";
+  demoSampleFile = makeSampleZip(fileName);
+  demoScenario = key === "upload_token" ? "token_expired" : "";
+  updateFileHint();
+
+  document.querySelector(".tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ---------- Status helpers ----------
+function statusInfo(resp) {
+  const data = (resp && resp.data) || {};
+  const fileStatus = data.file_status || {};
+  const msg = String(fileStatus.message || "");
+  const lower = msg.toLowerCase();
+
+  if (String(data.status).toLowerCase() === "pending") {
+    return { label: "Pending", cls: "badge-wait", text: "File uploaded, waiting to be processed", done: false, canVerify: false };
+  }
+  if (lower.includes("pending for verification")) {
+    return { label: "Pending verification", cls: "badge-info", text: msg, done: true, canVerify: true };
+  }
+  if (lower.includes("in process")) {
+    return { label: "In process", cls: "badge-ok", text: msg + " (records verified)", done: true, canVerify: false };
+  }
+  if (lower.includes("fail")) {
+    return { label: "Failed", cls: "badge-bad", text: msg, done: true, canVerify: false, counts: fileStatus };
+  }
+  return { label: String(data.status || "Unknown"), cls: "badge-info", text: msg || "-", done: true, canVerify: false };
+}
+
+function stopPolling() {
+  if (pollTimer) clearTimeout(pollTimer);
+  pollTimer = null;
+}
+
+function resetJob() {
+  stopPolling();
+  job = null;
+  const area = document.getElementById("jobArea");
+  area.innerHTML = "";
+  area.hidden = true;
+}
+
+// Check status now, then keep checking until the status stops changing
+function startPolling() {
+  stopPolling();
+  pollCount = 0;
+  pollStatus();
+}
+
+async function pollStatus() {
+  if (!job) return;
+  pollCount++;
+
+  const info = await checkStatus();
+
+  // Keep refreshing while the file is still pending (max 40 checks)
+  if (job && info && !info.done && pollCount < 40) {
+    pollTimer = setTimeout(pollStatus, job.demo ? 3000 : 15000);
+  }
+}
+
+async function checkStatus() {
+  if (!job) return null;
+
+  const statusBox = document.getElementById("jobStatus");
+  const refreshBtn = document.getElementById("refreshBtn");
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Checking...";
+
+  let info = null;
+
+  try {
+    const response = await fetch("/file-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        demo: job.demo,
+        pin: document.getElementById("u_pin").value,
+        tracking_id: job.trackingId
+      })
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      job.status = data.response;
+      info = statusInfo(data.response);
+      statusBox.innerHTML = renderJobStatus(info);
+      document.getElementById("processBtn").disabled = !info.canVerify;
+      document.getElementById("processHint").textContent = info.canVerify
+        ? "The file is ready. Check the details below and click Verify Records."
+        : "Available when the status is \"Pending verification\".";
+    } else {
+      statusBox.innerHTML = renderJobStatus(null) +
+        `<div class="error-card" style="margin-top:12px;"><b>Could not get status:</b> ${escapeHtml(
+          (data.error && (data.error.message || data.error.status)) || "Unknown error")}</div>`;
+      info = { done: true };
+    }
+  } catch (err) {
+    statusBox.innerHTML = renderJobStatus(null) +
+      `<div class="error-card" style="margin-top:12px;"><b>Could not reach the server.</b></div>`;
+    info = { done: true };
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "Refresh status";
+  }
+
+  return info;
+}
+
+function renderJobStatus(info) {
+  const time = new Date().toLocaleTimeString();
+  let rows = `
+    <tr><td>File name</td><td>${escapeHtml(job.fileName || "-")}</td></tr>
+    <tr><td>Tracking ID</td><td><span class="mono">${escapeHtml(job.trackingId)}</span>
+      <button type="button" class="copy-btn" onclick="copyTrackingId()">Copy</button></td></tr>`;
+
+  if (info) {
+    rows += `
+      <tr><td>Status</td><td><span class="badge ${info.cls}">${escapeHtml(info.label)}</span></td></tr>
+      <tr><td>Message</td><td>${escapeHtml(info.text)}</td></tr>`;
+
+    if (info.counts && info.counts.total_records !== undefined) {
+      rows += `
+        <tr><td>Records</td><td>
+          Total: <b>${escapeHtml(info.counts.total_records)}</b> &nbsp;|&nbsp;
+          Processed: <b>${escapeHtml(info.counts.processed_records)}</b> &nbsp;|&nbsp;
+          <span class="match-bad">Failed: ${escapeHtml(info.counts.failed_records)}</span>
+        </td></tr>`;
+    }
+
+    rows += `<tr><td>Last checked</td><td>${escapeHtml(time)}${
+      !info.done ? " (refreshing automatically)" : ""}</td></tr>`;
+  }
+
+  return `<table>${rows}</table>`;
+}
+
+function copyTrackingId() {
+  if (!job) return;
+  navigator.clipboard.writeText(job.trackingId).catch(() => {});
+}
+
+// Build the job card once per upload: status on top, Record Verify below
+function renderJobCard() {
+  const area = document.getElementById("jobArea");
+  area.hidden = false;
+
+  area.innerHTML = `
+    <div class="job-card">
+      ${job.demo ? '<div class="demo-tag" style="margin:0 0 10px;">Demo (simulated)</div>' : ""}
+      <h3>Step 2: File status</h3>
+      <div id="jobStatus">${renderJobStatus(null)}</div>
+      <button type="button" class="secondary-btn" id="refreshBtn">Refresh status</button>
+
+      <h3 class="section-title">Step 3: Verify records</h3>
+      <div class="hint" id="processHint">Available when the status is "Pending verification".</div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label>Year of Exam</label>
+          <input id="j_year" value="${escapeHtml(job.year)}" inputmode="numeric" maxlength="4">
+        </div>
+        <div>
+          <label>Document Type</label>
+          <input id="j_doc_type" value="${escapeHtml(job.docType)}">
+        </div>
+        <div>
+          <label>Institution Type</label>
+          <select id="j_inst">
+            ${["University", "Board", "College", "Autonomous College"].map(t =>
+              `<option value="${t}"${t === job.institutionType ? " selected" : ""}>${t}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label>Uploaded File Name</label>
+          <input id="j_file" value="${escapeHtml(job.fileName)}">
+        </div>
+      </div>
+      <div class="hint">These must exactly match the uploaded file.</div>
+
+      <button type="button" id="processBtn" disabled>Verify Records</button>
+    </div>
+  `;
+
+  document.getElementById("refreshBtn").addEventListener("click", () => startPolling());
+  document.getElementById("processBtn").addEventListener("click", runRecordVerify);
+  area.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", () => el.classList.remove("input-error"));
+  });
+}
+
+// ---------- Step 1: Upload ----------
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  clearHighlights();
+  highlightScope = null;
+
+  const demo = isDemo();
+  const file = document.getElementById("u_file").files[0] || (demo ? demoSampleFile : null);
+  const year = document.getElementById("u_year").value;
+  const docType = document.getElementById("u_doc_type").value.trim().toUpperCase();
+  const inst = document.getElementById("u_inst").value;
+  const pin = document.getElementById("u_pin").value;
+
+  // Quick checks in the browser
+  const errors = {};
+  if (!year) errors.year_of_exam = ["Select the exam year."];
+  if (!/^[A-Za-z0-9]{2,20}$/.test(docType)) errors.doc_type = ["Enter a document type, e.g. DGMST."];
+  if (!inst) errors.institution_type = ["Select the institution type."];
+  if (!file) {
+    errors.userfile = ["Choose a .zip file."];
+  } else if (!/\.zip$/i.test(file.name)) {
+    errors.userfile = ["Only .zip files are allowed."];
+  } else if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+    errors.userfile = [`File is larger than ${MAX_UPLOAD_MB} MB.`];
+  }
+  if (!demo && !pin) errors.pin = ["Enter the admin PIN."];
+
+  if (Object.keys(errors).length) {
+    document.getElementById("trackerArea").innerHTML = "";
+    showResult(renderError({ status: "fail", message: "Please correct the details.", errors }, "Upload failed"), false);
+    return;
+  }
+
+  resetJob();
+
+  const form = new FormData();
+  form.append("demo", demo ? "true" : "false");
+  form.append("pin", pin);
+  form.append("year_of_exam", year);
+  form.append("doc_type", docType);
+  form.append("institution_type", inst);
+  form.append("demo_scenario", demo ? demoScenario : "");
+  form.append("userfile", file, file.name);
+
+  const data = await runWithTracker({
+    url: "/upload-file",
+    payload: form,
+    steps: UPLOAD_STEPS,
+    title: "Uploading academic data",
+    button: document.getElementById("uploadBtn"),
+    busyText: "Uploading..."
+  });
+
+  demoScenario = "";
+
+  if (data.success && data.response && data.response.tracking_id) {
+    job = {
+      demo,
+      trackingId: data.response.tracking_id,
+      fileName: data.response.file_name || file.name,
+      year,
+      docType,
+      institutionType: inst
+    };
+
+    showResult(`
+      <div class="result-card">
+        <h3>File uploaded successfully</h3>
+        <p class="center">Tracking ID: <b class="mono">${escapeHtml(job.trackingId)}</b></p>
+        <p class="center hint">The status below refreshes automatically.</p>
+      </div>`, data.demo);
+
+    renderJobCard();
+    startPolling();
+  } else {
+    showResult(renderError(data.error || data, "Upload failed"), data.demo);
+  }
+});
+
+// ---------- Check an existing tracking ID ----------
+document.getElementById("trackExistingBtn").addEventListener("click", () => {
+  clearHighlights();
+  highlightScope = null;
+
+  const trackingId = document.getElementById("u_track_id").value.trim();
+
+  if (!/^[A-Za-z0-9]{8,64}$/.test(trackingId)) {
+    showResult(renderError({ status: "fail", message: "Please correct the details.",
+      errors: { tracking_id: ["Enter a valid tracking ID (letters and numbers only)."] } }, "Could not check status"), false);
+    return;
+  }
+
+  if (!isDemo() && !document.getElementById("u_pin").value) {
+    showResult(renderError({ status: "fail", message: "Please correct the details.",
+      errors: { pin: ["Enter the admin PIN."] } }, "Could not check status"), false);
+    return;
+  }
+
+  resetJob();
+  document.getElementById("trackerArea").innerHTML = "";
+  document.getElementById("responseArea").innerHTML = "";
+
+  job = {
+    demo: isDemo(),
+    trackingId,
+    fileName: document.getElementById("u_track_file").value.trim(),
+    year: document.getElementById("u_year").value,
+    docType: document.getElementById("u_doc_type").value.trim().toUpperCase(),
+    institutionType: document.getElementById("u_inst").value
+  };
+
+  renderJobCard();
+  startPolling();
+  document.getElementById("jobArea").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+// ---------- Step 3: Record Verify ----------
+async function runRecordVerify() {
+  if (!job) return;
+  clearHighlights();
+
+  const data = await runWithTracker({
+    url: "/process-file",
+    payload: {
+      demo: job.demo,
+      pin: document.getElementById("u_pin").value,
+      year_of_exam: document.getElementById("j_year").value.trim(),
+      doc_type: document.getElementById("j_doc_type").value.trim().toUpperCase(),
+      institution_type: document.getElementById("j_inst").value,
+      userfile: document.getElementById("j_file").value.trim()
+    },
+    steps: PROCESS_STEPS,
+    title: "Verifying records",
+    button: document.getElementById("processBtn"),
+    busyText: "Verifying..."
+  });
+
+  if (data.success && data.response) {
+    const already = String(data.response.record_verify) === "2";
+    showResult(`
+      <div class="result-card">
+        <h3>${escapeHtml(data.response.message || "File Data Verified")}</h3>
+        <p class="center">${already
+          ? "These records were already verified earlier."
+          : "The records are verified and will now go for final processing."}</p>
+      </div>`, data.demo);
+
+    startPolling(); // status should now move to "File is in process"
+  } else {
+    highlightScope = "process";
+    showResult(renderError(data.error || data, "Record verify failed"), data.demo);
+    highlightScope = null;
+  }
+}
 
 // =====================================================
 // NEXT STEP INFO
